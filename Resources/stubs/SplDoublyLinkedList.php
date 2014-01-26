@@ -33,7 +33,7 @@ class SplDoublyLinkedList implements Iterator, ArrayAccess, Countable
     private $flags;
 
     /**
-     * Constructs a new doubly linked list
+     * Constructs a new doubly linked list.
      */
     public function __construct()
     {
@@ -43,7 +43,7 @@ class SplDoublyLinkedList implements Iterator, ArrayAccess, Countable
     }
 
     /**
-     * Returns the mode of iteration
+     * Returns the mode of iteration.
      *
      * @return integer Returns the different modes and flags that affect the iteration.
      */
@@ -75,7 +75,7 @@ class SplDoublyLinkedList implements Iterator, ArrayAccess, Countable
     }
 
     /**
-     * Peeks at the node from the beginning of the doubly linked list
+     * Peeks at the node from the beginning of the doubly linked list.
      *
      * @return mixed
      *
@@ -105,7 +105,7 @@ class SplDoublyLinkedList implements Iterator, ArrayAccess, Countable
     }
 
     /**
-     * Pops a node from the end of the doubly linked list
+     * Pops a node from the end of the doubly linked list.
      *
      * @return mixed The value of the popped node.
      *
@@ -122,7 +122,7 @@ class SplDoublyLinkedList implements Iterator, ArrayAccess, Countable
     }
 
     /**
-     * Pushes an element at the end of the doubly linked list
+     * Pushes an element at the end of the doubly linked list.
      *
      * @param mixed $value
      */
@@ -149,7 +149,7 @@ class SplDoublyLinkedList implements Iterator, ArrayAccess, Countable
     }
 
     /**
-     * Prepends the doubly linked list with an element
+     * Prepends the doubly linked list with an element.
      *
      * @param mixed $value The value to unshift.
      */
@@ -170,7 +170,7 @@ class SplDoublyLinkedList implements Iterator, ArrayAccess, Countable
     }
 
     /**
-     * Returns whether the requested $index exists
+     * Returns whether the requested $index exists.
      *
      * @param mixed $index
      */
@@ -184,7 +184,7 @@ class SplDoublyLinkedList implements Iterator, ArrayAccess, Countable
     }
 
     /**
-     * Returns the value at the specified $index
+     * Returns the value at the specified $index.
      *
      * @param integer $index
      *
@@ -202,7 +202,7 @@ class SplDoublyLinkedList implements Iterator, ArrayAccess, Countable
     }
 
     /**
-     * Sets the value at the specified $index to $newval
+     * Sets the value at the specified $index to $newval.
      *
      * @param integer $index The index being set.
      * @param mixed   $newval The new value for the index.
@@ -224,7 +224,7 @@ class SplDoublyLinkedList implements Iterator, ArrayAccess, Countable
     }
 
     /**
-     * Sets the value at the specified $index to $newval
+     * Sets the value at the specified $index to $newval.
      *
      * @param integer $index The index being unset.
      *
@@ -261,7 +261,7 @@ class SplDoublyLinkedList implements Iterator, ArrayAccess, Countable
     }
 
     /**
-     * Return current node index
+     * Return current node index.
      *
      * @return number The current node index.
      */
@@ -303,7 +303,7 @@ class SplDoublyLinkedList implements Iterator, ArrayAccess, Countable
     }
 
     /**
-     * Rewind iterator back to the start
+     * Rewind iterator back to the start.
      */
     public function rewind()
     {
@@ -315,7 +315,7 @@ class SplDoublyLinkedList implements Iterator, ArrayAccess, Countable
     }
 
     /**
-     * Check whether the doubly linked list contains more nodes
+     * Check whether the doubly linked list contains more nodes.
      */
     public function valid()
     {

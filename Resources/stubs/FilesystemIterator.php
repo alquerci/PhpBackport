@@ -56,7 +56,7 @@ class FilesystemIterator extends DirectoryIterator implements SeekableIterator
     }
 
     /**
-     * Gets the handling flags
+     * Gets the handling flags.
      *
      * @return integer The integer value of the set flags.
      */
@@ -66,7 +66,7 @@ class FilesystemIterator extends DirectoryIterator implements SeekableIterator
     }
 
     /**
-     * Sets handling flags
+     * Sets handling flags.
      *
      * @param integer $flags The handling flags to set. See the FilesystemIterator constants.
      */
@@ -104,7 +104,7 @@ class FilesystemIterator extends DirectoryIterator implements SeekableIterator
 
 
     /**
-     * Retrieve the key for the current file
+     * Retrieve the key for the current file.
      *
      * @return string Returns the pathname or filename depending on the set flags. See the FilesystemIterator constants.
      */
@@ -118,7 +118,7 @@ class FilesystemIterator extends DirectoryIterator implements SeekableIterator
     }
 
     /**
-     * Move to the next file
+     * Move to the next file.
      */
     public function next()
     {
@@ -146,7 +146,7 @@ class FilesystemIterator extends DirectoryIterator implements SeekableIterator
     }
 
     /**
-     * Seek to a given position
+     * Seek to a given position.
      *
      * @param integer $position The zero-based numeric position to seek to.
      */

@@ -125,7 +125,7 @@ if (!function_exists('http_build_query')) {
 
 if (!function_exists('stream_resolve_include_path')) {
     /**
-     * Resolve filename against the include path
+     * Resolve filename against the include path.
      *
      * @param string $filename
      *

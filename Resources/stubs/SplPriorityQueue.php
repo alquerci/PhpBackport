@@ -15,28 +15,30 @@
 class SplPriorityQueue implements Iterator, Countable
 {
     /**
-     * Extract data only
+     * Extract data only.
      */
     const EXTR_DATA = 0x00000001;
 
     /**
-     * Extract priority only
+     * Extract priority only.
      */
     const EXTR_PRIORITY = 0x00000002;
 
     /**
-     * Extract an array of ('data' => $value, 'priority' => $priority)
+     * Extract an array of ('data' => $value, 'priority' => $priority).
      */
     const EXTR_BOTH = 0x00000003;
 
     /**
-     * Count of items in the queue
+     * Count of items in the queue.
+     *
      * @var int
      */
     protected $count = 0;
 
     /**
-     * Flag indicating what should be returned when iterating or extracting
+     * Flag indicating what should be returned when iterating or extracting.
+     *
      * @var int
      */
     protected $extractFlags = self::EXTR_DATA;
@@ -47,24 +49,23 @@ class SplPriorityQueue implements Iterator, Countable
     protected $preparedQueue = false;
 
     /**
-     * All items in the queue
+     * All items in the queue.
+     *
      * @var array
      */
     protected $queue = array();
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * Creates a new, empty queue
-     *
-     * @return void
+     * Creates a new, empty queue.
      */
     public function __construct()
     {
     }
 
     /**
-     * Compare two priorities
+     * Compare two priorities.
      *
      * Returns positive integer if $priority1 is greater than $priority2, 0
      * if equal, negative otherwise.
@@ -74,7 +75,7 @@ class SplPriorityQueue implements Iterator, Countable
      *
      * @param  mixed $priority1
      * @param  mixed $priority2
-     * @return int
+     * @return integer
      */
     public function compare($priority1, $priority2)
     {
@@ -89,9 +90,9 @@ class SplPriorityQueue implements Iterator, Countable
     }
 
     /**
-     * Countable: return number of items composed in the queue
+     * Countable: return number of items composed in the queue.
      *
-     * @return int
+     * @return integer
      */
     public function count()
     {
@@ -99,7 +100,7 @@ class SplPriorityQueue implements Iterator, Countable
     }
 
     /**
-     * Iterator: return current item
+     * Iterator: return current item.
      *
      * @return mixed
      */
@@ -140,11 +141,11 @@ class SplPriorityQueue implements Iterator, Countable
     }
 
     /**
-     * Extract a node from top of the heap and sift up
+     * Extract a node from top of the heap and sift up.
      *
      * Returns either the value, the priority, or both, depending on the extract flag.
      *
-     * @return mixed;
+     * @return mixed
      */
     public function extract()
     {
@@ -181,11 +182,10 @@ class SplPriorityQueue implements Iterator, Countable
     }
 
     /**
-     * Insert a value into the heap, at the specified priority
+     * Insert a value into the heap, at the specified priority.
      *
      * @param  mixed $value
      * @param  mixed $priority
-     * @return void
      */
     public function insert($value, $priority)
     {
@@ -201,9 +201,9 @@ class SplPriorityQueue implements Iterator, Countable
     }
 
     /**
-     * Is the queue currently empty?
+     * Is the queue currently empty?.
      *
-     * @return bool
+     * @return Boolean
      */
     public function isEmpty()
     {
@@ -211,7 +211,7 @@ class SplPriorityQueue implements Iterator, Countable
     }
 
     /**
-     * Iterator: return current key
+     * Iterator: return current key.
      *
      * @return mixed Usually an int or string
      */
@@ -221,9 +221,7 @@ class SplPriorityQueue implements Iterator, Countable
     }
 
     /**
-     * Iterator: Move pointer forward
-     *
-     * @return void
+     * Iterator: Move pointer forward.
      */
     public function next()
     {
@@ -231,21 +229,17 @@ class SplPriorityQueue implements Iterator, Countable
     }
 
     /**
-     * Recover from corrupted state and allow further actions on the queue
+     * Recover from corrupted state and allow further actions on the queue.
      *
      * Unimplemented, and only included in order to retain the same interface as PHP's
      * SplPriorityQueue.
-     *
-     * @return void
      */
     public function recoverFromCorruption()
     {
     }
 
     /**
-     * Iterator: Move pointer to first item
-     *
-     * @return void
+     * Iterator: Move pointer to first item.
      */
     public function rewind()
     {
@@ -255,7 +249,7 @@ class SplPriorityQueue implements Iterator, Countable
     }
 
     /**
-     * Set the extract flags
+     * Set the extract flags.
      *
      * Defines what is extracted by SplPriorityQueue::current(),
      * SplPriorityQueue::top() and SplPriorityQueue::extract().
@@ -266,8 +260,7 @@ class SplPriorityQueue implements Iterator, Countable
      *
      * The default mode is SplPriorityQueue::EXTR_DATA.
      *
-     * @param  int $flags
-     * @return void
+     * @param integer $flags
      */
     public function setExtractFlags($flags)
     {
@@ -284,7 +277,7 @@ class SplPriorityQueue implements Iterator, Countable
 
     /**
      * Return the value or priority (or both) of the top node, depending on
-     * the extract flag
+     * the extract flag.
      *
      * @return mixed
      */
@@ -312,9 +305,9 @@ class SplPriorityQueue implements Iterator, Countable
     }
 
     /**
-     * Iterator: is the current position valid for the queue
+     * Iterator: is the current position valid for the queue.
      *
-     * @return bool
+     * @return Boolean
      */
     public function valid()
     {
@@ -322,9 +315,7 @@ class SplPriorityQueue implements Iterator, Countable
     }
 
     /**
-     * Sort the queue
-     *
-     * @return void
+     * Sort the queue.
      */
     protected function sort()
     {
@@ -332,9 +323,7 @@ class SplPriorityQueue implements Iterator, Countable
     }
 
     /**
-     * Prepare the queue for iteration and/or extraction
-     *
-     * @return void
+     * Prepare the queue for iteration and/or extraction.
      */
     protected function prepareQueue()
     {
