@@ -137,6 +137,10 @@ if (!function_exists('stream_resolve_include_path')) {
     {
         $filename = (string) $filename;
 
+        if (file_exists($filename)) {
+            return realpath($filename);
+        }
+
         $includePaths = explode(PATH_SEPARATOR, get_include_path());
 
         foreach ($includePaths as $path) {
