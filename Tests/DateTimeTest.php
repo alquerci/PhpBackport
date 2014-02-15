@@ -500,6 +500,52 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             'Fri, 13 Dec 1901 20:45:54 GMT' // The valid range of a timestamp from
         ));
     }
+
+    /**
+     * @dataProvider getSetTimestampCorrectDateModificationData
+     *
+     * @param mixed $expected
+     * @param mixed $newTimestamp
+     */
+    public function testSetTimestampCorrectDateModification($expected, $newTimestamp)
+    {
+        $date = new DateTime();
+
+        $date->setTimestamp($newTimestamp);
+        $this->assertSame($expected, $date->getTimestamp());
+    }
+
+    public function getSetTimestampCorrectDateModificationData()
+    {
+        return array(
+            array(0, 0),
+            array(0, '0'),
+            array(-33, -33),
+            array(-9, PHP_INT_MAX.'1'), // Correct behavior for 32 bits system
+        );
+    }
+
+    /**
+     * @dataProvider getSetTimestampReturnValueData
+     *
+     * @param mixed $newTimestamp
+     * @param PHPUnit_Framework_Constraint $expected
+     */
+    public function testSetTimestampReturnValue($newTimestamp, $expected)
+    {
+        $date = new DateTime();
+
+        $this->assertThat($date->setTimestamp($newTimestamp), $expected);
+    }
+
+    public function getSetTimestampReturnValueData()
+    {
+        return array(
+            array(0, $this->isInstanceOf('DateTime')),
+            array('0', $this->isInstanceOf('DateTime')),
+            array(PHP_INT_MAX.'1', $this->isInstanceOf('DateTime')),
+        );
+    }
 }
 
 class Tests_DateTimeTestClassWithToString

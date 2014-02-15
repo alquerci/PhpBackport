@@ -120,7 +120,21 @@ class DateTime
 
     public function getTimestamp()
     {
-        return $this->format('U');
+        return (integer) $this->format('U');
+    }
+
+    /**
+     * Sets the date and time based on an Unix timestamp.
+     *
+     * @param integer $unixtimestamp Unix timestamp representing the date
+     *
+     * @return DateTime The DateTime object for method chaining or FALSE on failure
+     */
+    public function setTimestamp($unixtimestamp)
+    {
+        $this->timestamp = $unixtimestamp;
+
+        return $this;
     }
 
     public function format($format)
