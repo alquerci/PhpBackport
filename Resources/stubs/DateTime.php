@@ -96,6 +96,13 @@ class DateTime
             throw new Exception($message);
         }
 
+        if (null !== $timezone) {
+            $default = date_default_timezone_get();
+            $this->timestamp -= $this->setDefaultTimezone($timezone->getName());
+            $this->timestamp -= date('Z', $this->timestamp);
+            $this->setDefaultTimezone($default);
+        }
+
         $this->date = $time;
         $this->timezone = $timezone;
     }
@@ -261,11 +268,17 @@ class DateTime
     {
         $timezone = $this->getTimezone();
         $gmtDiff = null;
-
         $timestamp = $this->timestamp;
 
         if (false === $this->isValidTimestamp()) {
             $timestamp = gmmktime($this->time['hour'], $this->time['minute'], $this->time['second'], $this->time['month'], $this->time['day'], 1970);
+
+            if (null !== $timezone) {
+                $default = date_default_timezone_get();
+                $timestamp -= $this->setDefaultTimezone($timezone->getName());
+                $timestamp -= date('Z', $timestamp);
+                $this->setDefaultTimezone($default);
+            }
 
             $year = (integer) $this->time['year'];
             $absYear = abs($year);
@@ -292,7 +305,7 @@ class DateTime
         }
 
         $default = date_default_timezone_get();
-        date_default_timezone_set($timezone->getName());
+        $timestamp -= $this->setDefaultTimezone($timezone->getName());
         if (null === $this->timezone) {
             $date = date($format, $timestamp);
         } else {
@@ -300,9 +313,9 @@ class DateTime
                 $gmtDiff = 'O';
             }
 
-            $date = date($format.$gmtDiff, $timestamp - date('Z', $timestamp));
+            $date = date($format.$gmtDiff, $timestamp);
         }
-        date_default_timezone_set($default);
+        $this->setDefaultTimezone($default);
 
         return $date;
     }
@@ -358,10 +371,6 @@ class DateTime
 
         if ($time['tz_identifier']) {
             $timezone = new DateTimeZone($time['tz_identifier']);
-        }
-
-        if (0 == $time['year']) {
-            $timestamp = -2147483646;
         }
 
         try {
@@ -874,7 +883,11 @@ class DateTime
 
         $this->timestamp = gmmktime($time['hour'], $time['minute'], $time['second'], $time['month'], $time['day'], $time['year']);
         $this->time = $time;
-        $this->timezone = $this->getTimezone();
+
+        $default = date_default_timezone_get();
+        $this->timestamp -= $this->setDefaultTimezone($this->getTimezone()->getName());
+        $this->timestamp -= date('Z', $this->timestamp);
+        $this->setDefaultTimezone($default);
     }
 
     /**
@@ -1158,5 +1171,21 @@ class DateTime
         }
 
         return true;
+    }
+
+    private function setDefaultTimezone($tzIdentifier)
+    {
+        $timestampDiff = 0;
+
+        if ('Australia/Eucla' === $tzIdentifier) {
+            $tzIdentifier = 'GMT';
+            $timestampDiff = -31500;
+        }
+
+        if (false === @date_default_timezone_set($tzIdentifier)) {
+            $timestampDiff = 3600;
+        }
+
+        return $timestampDiff;
     }
 }
