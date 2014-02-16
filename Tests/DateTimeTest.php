@@ -562,7 +562,6 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
 
         $datetime = new DateTime("2009-01-30 19:34:10");
 
-        $this->assertFalse(@$datetime->setDate());
         try {
             $this->assertFalse($datetime->setDate());
             $this->fail('DateTime::setDate() trigger a warning with zero arguments');
@@ -570,6 +569,7 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             $this->assertThat($e->getCode(), $this->logicalOr(E_WARNING, E_USER_WARNING));
             $this->assertEquals('DateTime::setDate() expects exactly 3 parameters, 0 given', $e->getMessage());
         }
+        $this->assertFalse(@$datetime->setDate());
     }
 
     public function testSetDateErrorWithLessThanExpectedNoOfArguments()
@@ -582,7 +582,6 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
         $month = 1;
         $day = 30;
 
-        $this->assertFalse(@$datetime->setDate($year));
         try {
             $this->assertFalse($datetime->setDate($year));
             $this->fail('DateTime::setDate() trigger a warning with zero arguments');
@@ -590,9 +589,8 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             $this->assertThat($e->getCode(), $this->logicalOr(E_WARNING, E_USER_WARNING));
             $this->assertEquals('DateTime::setDate() expects exactly 3 parameters, 1 given', $e->getMessage());
         }
+        $this->assertFalse(@$datetime->setDate($year));
 
-
-        $this->assertFalse(@$datetime->setDate($year, $month));
         try {
             $this->assertFalse($datetime->setDate($year, $month));
             $this->fail('DateTime::setDate() trigger a warning with zero arguments');
@@ -600,7 +598,7 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             $this->assertThat($e->getCode(), $this->logicalOr(E_WARNING, E_USER_WARNING));
             $this->assertEquals('DateTime::setDate() expects exactly 3 parameters, 2 given', $e->getMessage());
         }
-
+        $this->assertFalse(@$datetime->setDate($year, $month));
     }
 
     public function testSetDateErrorWithMoreThanExpectedNoOfArguments()
@@ -614,7 +612,6 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
         $day = 30;
         $extra_arg = 10;
 
-        $this->assertFalse(@$datetime->setDate($year, $month, $day, $extra_arg));
         try {
             $this->assertFalse($datetime->setDate($year, $month, $day, $extra_arg));
             $this->fail('DateTime::setDate() trigger a warning with zero arguments');
@@ -622,6 +619,7 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             $this->assertThat($e->getCode(), $this->logicalOr(E_WARNING, E_USER_WARNING));
             $this->assertEquals('DateTime::setDate() expects exactly 3 parameters, 4 given', $e->getMessage());
         }
+        $this->assertFalse(@$datetime->setDate($year, $month, $day, $extra_arg));
     }
 
     /**
@@ -720,8 +718,8 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             $this->assertFalse(@$object->setDate($year, $month, $day));
         }
 
-        if (is_resource($year)) {
-            fclose($year);
+        if (is_resource($month)) {
+            fclose($month);
         }
     }
 
@@ -786,8 +784,8 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             $this->assertFalse(@$object->setDate($year, $month, $day));
         }
 
-        if (is_resource($year)) {
-            fclose($year);
+        if (is_resource($day)) {
+            fclose($day);
         }
     }
 
@@ -812,6 +810,297 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             array(null, array('ts' => -205345550, 'date' => '1963-06-30 08:34:10')),
             array(true, array('ts' => -205259150, 'date' => '1963-07-01 08:34:10')),
             array(false, array('ts' => -205345550, 'date' => '1963-06-30 08:34:10')),
+            array('', false),
+            array('string', false),
+            array('sTrInG', false),
+            array('hello world', false),
+            array(new Tests_DateTimeTestClassWithToString(), false),
+            array(new stdClass(), false),
+            array(fopen(__FILE__, 'r'), false),
+        );
+    }
+
+    /**
+     * @dataProvider getSetTimeBasic1Data
+     *
+     * @param integer $hour
+     * @param integer $minute
+     * @param integer $second
+     * @param string $expected
+     */
+    public function testSetTimeBasic1($hour, $minute, $second, $expected)
+    {
+        //Set the default time zone
+        date_default_timezone_set("Europe/London");
+
+        // Create a DateTime object
+        $datetime = new DateTime("2009-01-31 15:14:10");
+
+        $this->assertEquals('Sat, 31 Jan 2009 15:14:10 +0000', $datetime ->format(DATE_RFC2822));
+
+        if (null === $second) {
+            $datetime->setTime($hour, $minute);
+        } else {
+            $datetime->setTime($hour, $minute, $second);
+        }
+
+        $this->assertEquals($expected, $datetime ->format(DATE_RFC2822));
+    }
+
+    public function getSetTimeBasic1Data()
+    {
+        return array(
+            array(17, 20, null, 'Sat, 31 Jan 2009 17:20:00 +0000'),
+            array(19, 05, 59, 'Sat, 31 Jan 2009 19:05:59 +0000'),
+            array(24, 10, null, 'Sun, 01 Feb 2009 00:10:00 +0000'),
+            array(47, 35, 47, 'Sun, 01 Feb 2009 23:35:47 +0000'),
+            array(54, 25, null, 'Mon, 02 Feb 2009 06:25:00 +0000'),
+        );
+    }
+
+    public function testSetTimeErrorWithZeroArguments()
+    {
+        date_default_timezone_set("Europe/London");
+
+        $datetime = new DateTime("2009-01-31 15:34:10");
+
+        try {
+            $this->assertFalse($datetime->setTime());
+            $this->fail('DateTime::setTime() trigger a warning with zero arguments');
+        } catch (PHPUnit_Framework_Error $e) {
+            $this->assertThat($e->getCode(), $this->logicalOr(E_WARNING, E_USER_WARNING));
+            $this->assertEquals('DateTime::setTime() expects at least 2 parameters, 0 given', $e->getMessage());
+        }
+        $this->assertFalse(@$datetime->setTime());
+    }
+
+    public function testSetTimeErrorWithLessThanExpectedNoOfArguments()
+    {
+        date_default_timezone_set("Europe/London");
+
+        $datetime = new DateTime("2009-01-31 15:34:10");
+
+        $hour = 18;
+
+        try {
+            $this->assertFalse($datetime->setTime($hour));
+            $this->fail('DateTime::setTime() trigger a warning with zero arguments');
+        } catch (PHPUnit_Framework_Error $e) {
+            $this->assertThat($e->getCode(), $this->logicalOr(E_WARNING, E_USER_WARNING));
+            $this->assertEquals('DateTime::setTime() expects at least 2 parameters, 1 given', $e->getMessage());
+        }
+        $this->assertFalse(@$datetime->setTime($hour));
+    }
+
+    public function testSetTimeErrorWithMoreThanExpectedNoOfArguments()
+    {
+        date_default_timezone_set("Europe/London");
+
+        $datetime = new DateTime("2009-01-31 15:34:10");
+
+        $hour = 18;
+        $min = 15;
+        $sec = 30;
+        $extra_arg = 10;
+
+        try {
+            $this->assertFalse($datetime->setTime($hour, $min, $sec, $extra_arg));
+            $this->fail('DateTime::setTime() trigger a warning with zero arguments');
+        } catch (PHPUnit_Framework_Error $e) {
+            $this->assertThat($e->getCode(), $this->logicalOr(E_WARNING, E_USER_WARNING));
+            $this->assertEquals('DateTime::setTime() expects at most 3 parameters, 4 given', $e->getMessage());
+        }
+        $this->assertFalse(@$datetime->setTime($hour, $min, $sec, $extra_arg));
+    }
+
+    /**
+     * @dataProvider getSetTimeVariation1Data
+     */
+    public function testSetTimeVariation1($hour, $expected)
+    {
+        //Set the default time zone
+        date_default_timezone_set("Europe/London");
+
+        $object = new DateTime("2009-01-31 15:14:10");
+        $minute = 13;
+        $sec = 45;
+
+        if (is_array($expected)) {
+            $res = $object->setTime($hour, $minute, $sec);
+
+            $this->assertSame('Europe/London', $res->getTimezone()->getName());
+            $this->assertSame($expected['date'], $res->format('Y-m-d H:i:s'));
+            $this->assertSame($expected['ts'], $res->getTimestamp());
+        } elseif (false === $expected) {
+            try {
+                $this->assertFalse($object->setTime($hour, $minute, $sec));
+                $this->fail('DateTime::setTime() trigger a warning with unexpected values to first argument $hour');
+            } catch (PHPUnit_Framework_Error $e) {
+                $this->assertThat($e->getCode(), $this->logicalOr(E_WARNING, E_USER_WARNING));
+                $this->assertEquals(sprintf('DateTime::setTime() expects parameter 1 to be long, %s given', gettype($hour)), $e->getMessage());
+            }
+
+            $this->assertFalse(@$object->setTime($hour, $minute, $sec));
+        }
+
+        if (is_resource($hour)) {
+            fclose($hour);
+        }
+    }
+
+    public function getSetTimeVariation1Data()
+    {
+        // add arrays
+        $index_array = array (1, 2, 3);
+        $assoc_array = array ('one' => 1, 'two' => 2);
+
+        return array(
+            array(0, array('ts' => 1233360825, 'date' => '2009-01-31 00:13:45')),
+            array(1, array('ts' => 1233364425, 'date' => '2009-01-31 01:13:45')),
+            array(12345, array('ts' => 1277799225, 'date' => '2010-06-29 09:13:45')),
+            array(-12345, array('ts' => 1188915225, 'date' => '2007-09-04 15:13:45')),
+            array(10.5, array('ts' => 1233396825, 'date' => '2009-01-31 10:13:45')),
+            array(-10.5, array('ts' => 1233324825, 'date' => '2009-01-30 14:13:45')),
+            array(.5, array('ts' => 1233360825, 'date' => '2009-01-31 00:13:45')),
+            array(array(), false),
+            array($index_array, false),
+            array($assoc_array, false),
+            array(array('foo', $index_array, $assoc_array), false),
+            array(null, array('ts' => 1233360825, 'date' => '2009-01-31 00:13:45')),
+            array(true, array('ts' => 1233364425, 'date' => '2009-01-31 01:13:45')),
+            array(false, array('ts' => 1233360825, 'date' => '2009-01-31 00:13:45')),
+            array('', false),
+            array('string', false),
+            array('sTrInG', false),
+            array('hello world', false),
+            array(new Tests_DateTimeTestClassWithToString(), false),
+            array(new stdClass(), false),
+            array(fopen(__FILE__, 'r'), false),
+        );
+    }
+
+    /**
+     * @dataProvider getSetTimeVariation2Data
+     */
+    public function testSetTimeVariation2($minute, $expected)
+    {
+        //Set the default time zone
+        date_default_timezone_set("Europe/London");
+
+        $object = new DateTime("2009-01-31 15:14:10");
+        $hour = 10;
+        $sec = 45;
+
+        if (is_array($expected)) {
+            $res = $object->setTime($hour, $minute, $sec);
+
+            $this->assertSame('Europe/London', $res->getTimezone()->getName());
+            $this->assertSame($expected['date'], $res->format('Y-m-d H:i:s'));
+            $this->assertSame($expected['ts'], $res->getTimestamp());
+        } elseif (false === $expected) {
+            try {
+                $this->assertFalse($object->setTime($hour, $minute, $sec));
+                $this->fail('DateTime::setTime() trigger a warning with unexpected values to second argument $minute');
+            } catch (PHPUnit_Framework_Error $e) {
+                $this->assertThat($e->getCode(), $this->logicalOr(E_WARNING, E_USER_WARNING));
+                $this->assertEquals(sprintf('DateTime::setTime() expects parameter 2 to be long, %s given', gettype($minute)), $e->getMessage());
+            }
+
+            $this->assertFalse(@$object->setTime($hour, $minute, $sec));
+        }
+
+        if (is_resource($minute)) {
+            fclose($minute);
+        }
+    }
+
+    public function getSetTimeVariation2Data()
+    {
+        // add arrays
+        $index_array = array (1, 2, 3);
+        $assoc_array = array ('one' => 1, 'two' => 2);
+
+        return array(
+            array(0, array('ts' => 1233396045, 'date' => '2009-01-31 10:00:45')),
+            array(1, array('ts' => 1233396105, 'date' => '2009-01-31 10:01:45')),
+            array(12345, array('ts' => 1234136745, 'date' => '2009-02-08 23:45:45')),
+            array(-12345, array('ts' => 1232655345, 'date' => '2009-01-22 20:15:45')),
+            array(10.5, array('ts' => 1233396645, 'date' => '2009-01-31 10:10:45')),
+            array(-10.5, array('ts' => 1233395445, 'date' => '2009-01-31 09:50:45')),
+            array(.5, array('ts' => 1233396045, 'date' => '2009-01-31 10:00:45')),
+            array(array(), false),
+            array($index_array, false),
+            array($assoc_array, false),
+            array(array('foo', $index_array, $assoc_array), false),
+            array(null, array('ts' => 1233396045, 'date' => '2009-01-31 10:00:45')),
+            array(true, array('ts' => 1233396105, 'date' => '2009-01-31 10:01:45')),
+            array(false, array('ts' => 1233396045, 'date' => '2009-01-31 10:00:45')),
+            array('', false),
+            array('string', false),
+            array('sTrInG', false),
+            array('hello world', false),
+            array(new Tests_DateTimeTestClassWithToString(), false),
+            array(new stdClass(), false),
+            array(fopen(__FILE__, 'r'), false),
+        );
+    }
+
+    /**
+     * @dataProvider getSetTimeVariation3Data
+     */
+    public function testSetTimeVariation3($sec, $expected)
+    {
+        //Set the default time zone
+        date_default_timezone_set("Europe/London");
+
+        $object = new DateTime("2009-01-31 15:14:10");
+        $hour = 10;
+        $minute = 13;
+
+        if (is_array($expected)) {
+            $res = $object->setTime($hour, $minute, $sec);
+
+            $this->assertSame('Europe/London', $res->getTimezone()->getName());
+            $this->assertSame($expected['date'], $res->format('Y-m-d H:i:s'));
+            $this->assertSame($expected['ts'], $res->getTimestamp());
+        } elseif (false === $expected) {
+            try {
+                $this->assertFalse($object->setTime($hour, $minute, $sec));
+                $this->fail('DateTime::setTime() trigger a warning with unexpected values to third argument $sec');
+            } catch (PHPUnit_Framework_Error $e) {
+                $this->assertThat($e->getCode(), $this->logicalOr(E_WARNING, E_USER_WARNING));
+                $this->assertEquals(sprintf('DateTime::setTime() expects parameter 3 to be long, %s given', gettype($sec)), $e->getMessage());
+            }
+
+            $this->assertFalse(@$object->setTime($hour, $minute, $sec));
+        }
+
+        if (is_resource($sec)) {
+            fclose($sec);
+        }
+    }
+
+    public function getSetTimeVariation3Data()
+    {
+        // add arrays
+        $index_array = array (1, 2, 3);
+        $assoc_array = array ('one' => 1, 'two' => 2);
+
+        return array(
+            array(0, array('ts' => 1233396780, 'date' => '2009-01-31 10:13:00')),
+            array(1, array('ts' => 1233396781, 'date' => '2009-01-31 10:13:01')),
+            array(12345, array('ts' => 1233409125, 'date' => '2009-01-31 13:38:45')),
+            array(-12345, array('ts' => 1233384435, 'date' => '2009-01-31 06:47:15')),
+            array(10.5, array('ts' => 1233396790, 'date' => '2009-01-31 10:13:10')),
+            array(-10.5, array('ts' => 1233396770, 'date' => '2009-01-31 10:12:50')),
+            array(.5, array('ts' => 1233396780, 'date' => '2009-01-31 10:13:00')),
+            array(array(), false),
+            array($index_array, false),
+            array($assoc_array, false),
+            array(array('foo', $index_array, $assoc_array), false),
+            array(null, array('ts' => 1233396780, 'date' => '2009-01-31 10:13:00')),
+            array(true, array('ts' => 1233396781, 'date' => '2009-01-31 10:13:01')),
+            array(false, array('ts' => 1233396780, 'date' => '2009-01-31 10:13:00')),
             array('', false),
             array('string', false),
             array('sTrInG', false),

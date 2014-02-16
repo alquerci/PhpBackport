@@ -149,17 +149,67 @@ class DateTime
         $time['month'] = (integer) $month;
         $time['day'] = (integer) $day;
 
-        $time = $this->doNormalize($time);
+        $this->updateTs($time);
 
-        $res = 0;
-        $res += $this->doYears($time['year']);
-        $res += $this->doMonths($time['month'], $time['year']);
-        $res += $this->doDays($time['day']);
-        $res += $this->doTime($time['hour'], $time['minute'], $time['second']);
+        return $this;
+    }
 
-        $this->timestamp = $res;
-        $this->time = $time;
-        $this->timezone = $this->getTimezone();
+    /**
+     * Resets the current time of the DateTime object to a different time.
+     *
+     * @param integer $hour   Hour of the time
+     * @param integer $minute Minute of the time
+     * @param integer $second Second of the time [Optional]
+     *
+     * @return DateTime|FALSE The DateTime object for method chaining or FALSE on failure
+     */
+    public function setTime($hour = null, $minute = null, $second = 0)
+    {
+        if (2 > $argc = func_num_args()) {
+            trigger_error(sprintf('DateTime::setTime() expects at least 2 parameters, %d given', $argc), E_USER_WARNING);
+
+            return false;
+        }
+
+        if (3 < $argc) {
+            trigger_error(sprintf('DateTime::setTime() expects at most 3 parameters, %d given', $argc), E_USER_WARNING);
+
+            return false;
+        }
+
+        if (null === $hour || false === $hour) {
+            $hour = 0;
+        }
+        if (!is_scalar($hour) || is_string($hour)) {
+            trigger_error(sprintf('DateTime::setTime() expects parameter 1 to be long, %s given', gettype($hour)), E_USER_WARNING);
+
+            return false;
+        }
+
+        if (null === $minute || false === $minute) {
+            $minute = 0;
+        }
+        if (!is_scalar($minute) || is_string($minute)) {
+            trigger_error(sprintf('DateTime::setTime() expects parameter 2 to be long, %s given', gettype($minute)), E_USER_WARNING);
+
+            return false;
+        }
+
+        if (null === $second || false === $second) {
+            $second = 0;
+        }
+        if (!is_scalar($second) || is_string($second)) {
+            trigger_error(sprintf('DateTime::setTime() expects parameter 3 to be long, %s given', gettype($second)), E_USER_WARNING);
+
+            return false;
+        }
+
+        $time = $this->getTime();
+        $time['hour'] = (integer) $hour;
+        $time['minute'] = (integer) $minute;
+        $time['second'] = (integer) $second;
+
+        $this->updateTs($time);
 
         return $this;
     }
@@ -215,11 +265,7 @@ class DateTime
         $timestamp = $this->timestamp;
 
         if (false === $this->isValidTimestamp()) {
-            $timestamp = 0;
-            $timestamp += $this->doYears(1970);
-            $timestamp += $this->doMonths($this->time['month'], 1970);
-            $timestamp += $this->doDays($this->time['day']);
-            $timestamp += $this->doTime($this->time['hour'], $this->time['minute'], $this->time['second']);
+            $timestamp = gmmktime($this->time['hour'], $this->time['minute'], $this->time['second'], $this->time['month'], $this->time['day'], 1970);
 
             $year = (integer) $this->time['year'];
             $absYear = abs($year);
@@ -236,8 +282,10 @@ class DateTime
             $format = preg_replace('/(^|[^\x5C]|\x5C\x5C)Y/', '${1}'.$year, $format);
             $format = preg_replace('/(^|[^\x5C]|\x5C\x5C)y/', '${1}'.substr($year, -2), $format);
 
-            // FIXME determine the right textual day
-            $dayText = 'Saturday';
+            $dayText = 'Thursday';
+            if (true === $this->time['have_relative'] && true === $this->time['relative']['have_weekday_relative']) {
+                $dayText = $this->time['relative']['weekday_textual'];
+            }
             $dayText = '\\'.implode('\\', str_split($dayText));
             $format = preg_replace('/(^|[^\x5C]|\x5C\x5C)l/', '${1}'.$dayText, $format);
             $format = preg_replace('/(^|[^\x5C]|\x5C\x5C)D/', '${1}'.substr($dayText, 0, 6), $format);
@@ -386,30 +434,37 @@ class DateTime
                         case 'Sun';
                         case 'Sunday';
                             $time['relative']['weekday'] = 3;
+                            $time['relative']['weekday_textual'] = 'Sunday';
                             break;
                         case 'Mon';
                         case 'Monday';
                             $time['relative']['weekday'] = 4;
+                            $time['relative']['weekday_textual'] = 'Monday';
                             break;
                         case 'Tue';
                         case 'Tuesday';
                             $time['relative']['weekday'] = 5;
+                            $time['relative']['weekday_textual'] = 'Tuesday';
                             break;
                         case 'Wed';
                         case 'Wednesday';
                             $time['relative']['weekday'] = 6;
+                            $time['relative']['weekday_textual'] = 'Wednesday';
                             break;
                         case 'Thu';
                         case 'Thursday';
                             $time['relative']['weekday'] = 0;
+                            $time['relative']['weekday_textual'] = 'Thursday';
                             break;
                         case 'Fri';
                         case 'Friday';
                             $time['relative']['weekday'] = 1;
+                            $time['relative']['weekday_textual'] = 'Friday';
                             break;
                         case 'Sat';
                         case 'Saturday';
                             $time['relative']['weekday'] = 2;
+                            $time['relative']['weekday_textual'] = 'Saturday';
                             break;
                         default:
                             break;
@@ -813,6 +868,15 @@ class DateTime
         return $time;
     }
 
+    private function updateTs(array $time)
+    {
+        $time = $this->doNormalize($time);
+
+        $this->timestamp = gmmktime($time['hour'], $time['minute'], $time['second'], $time['month'], $time['day'], $time['year']);
+        $this->time = $time;
+        $this->timezone = $this->getTimezone();
+    }
+
     /**
      * Converts a year to the unix timestamp
      *
@@ -936,8 +1000,8 @@ class DateTime
     private function doRangeLimit($start, $end, $adj, &$a, &$b)
     {
         if ($a < $start) {
-            $b -= (integer) (($start - $a - 1) / $adj + 1);
-            $a = $adj - ($start - $a - 1) % $adj;
+            $b -= (integer) (abs($a) / $adj + 1);
+            $a = $adj - abs($a) % $adj;
         }
 
         if ($a >= $end) {
@@ -1023,6 +1087,9 @@ class DateTime
         }
         if (!isset($this->time['second'])) {
             $this->time['second'] = gmdate('s', $this->timestamp);
+        }
+        if (!isset($this->time['have_relative'])) {
+            $this->time['have_relative'] = false;
         }
 
         return $this->time;
