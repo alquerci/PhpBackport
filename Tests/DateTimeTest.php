@@ -112,7 +112,7 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             array('', $timezone, "Europe/London"),
             array('sTrInG', $timezone),
             array('hello world', $timezone),
-            array(new Tests_DateTimeTestClassWithToString(), $timezone),
+            array(new Instinct_Component_PhpBackport_Tests_DateTimeTestClassWithToString(), $timezone),
             array(new stdClass(), $timezone),
             array(fopen(__FILE__, 'r'), $timezone),
         );
@@ -216,7 +216,7 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             array('string', '4131Thu, 14 Jul 2005 22:30:41 +010030710'),
             array('sTrInG', '41BSTThu, 14 Jul 2005 22:30:41 +01001722'),
             array('hello world', '10Europe/LondonThursdayThursday2005 42005Thu, 14 Jul 2005 22:30:41 +0100Thursday14'),
-            array(new Tests_DateTimeTestClassWithToString(), 'CThursdaypm4141 PM 2005b14Europe/London2005-07-14T22:30:41+01:0031'),
+            array(new Instinct_Component_PhpBackport_Tests_DateTimeTestClassWithToString(), 'CThursdaypm4141 PM 2005b14Europe/London2005-07-14T22:30:41+01:0031'),
             array(new stdClass(), false),
             array(fopen(__FILE__, 'r'), false),
         );
@@ -682,7 +682,7 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             array('string', false),
             array('sTrInG', false),
             array('hello world', false),
-            array(new Tests_DateTimeTestClassWithToString(), false),
+            array(new Instinct_Component_PhpBackport_Tests_DateTimeTestClassWithToString(), false),
             array(new stdClass(), false),
             array(fopen(__FILE__, 'r'), false),
         );
@@ -748,7 +748,7 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             array('string', false),
             array('sTrInG', false),
             array('hello world', false),
-            array(new Tests_DateTimeTestClassWithToString(), false),
+            array(new Instinct_Component_PhpBackport_Tests_DateTimeTestClassWithToString(), false),
             array(new stdClass(), false),
             array(fopen(__FILE__, 'r'), false),
         );
@@ -814,7 +814,7 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             array('string', false),
             array('sTrInG', false),
             array('hello world', false),
-            array(new Tests_DateTimeTestClassWithToString(), false),
+            array(new Instinct_Component_PhpBackport_Tests_DateTimeTestClassWithToString(), false),
             array(new stdClass(), false),
             array(fopen(__FILE__, 'r'), false),
         );
@@ -973,7 +973,7 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             array('string', false),
             array('sTrInG', false),
             array('hello world', false),
-            array(new Tests_DateTimeTestClassWithToString(), false),
+            array(new Instinct_Component_PhpBackport_Tests_DateTimeTestClassWithToString(), false),
             array(new stdClass(), false),
             array(fopen(__FILE__, 'r'), false),
         );
@@ -1039,7 +1039,7 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             array('string', false),
             array('sTrInG', false),
             array('hello world', false),
-            array(new Tests_DateTimeTestClassWithToString(), false),
+            array(new Instinct_Component_PhpBackport_Tests_DateTimeTestClassWithToString(), false),
             array(new stdClass(), false),
             array(fopen(__FILE__, 'r'), false),
         );
@@ -1105,14 +1105,14 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             array('string', false),
             array('sTrInG', false),
             array('hello world', false),
-            array(new Tests_DateTimeTestClassWithToString(), false),
+            array(new Instinct_Component_PhpBackport_Tests_DateTimeTestClassWithToString(), false),
             array(new stdClass(), false),
             array(fopen(__FILE__, 'r'), false),
         );
     }
 }
 
-class Tests_DateTimeTestClassWithToString
+class Instinct_Component_PhpBackport_Tests_DateTimeTestClassWithToString
 {
     public function __toString()
     {

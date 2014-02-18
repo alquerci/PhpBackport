@@ -42,11 +42,34 @@ class DateTimeZone
 
     public function __construct($timezone)
     {
+        if (1 !== $argc = func_num_args()) {
+            throw new Exception(sprintf('DateTimeZone::__construct() expects exactly 1 parameter, %d given', $argc));
+        }
+
+        $timezone = (is_object($timezone) && method_exists($timezone, '__toString')) ? $timezone->__toString() : $timezone;
+
+        if (empty($timezone)
+            || !is_string($timezone)
+            || !in_array($timezone, self::$listIdentifiersWithBC, true)
+        ) {
+            if (null !== $timezone && !is_scalar($timezone)) {
+                throw new Exception(sprintf('DateTimeZone::__construct() expects parameter 1 to be string, %s given', gettype($timezone)));
+            }
+
+            throw new Exception(sprintf('DateTimeZone::__construct(): Unknown or bad timezone (%s)', $timezone));
+        }
+
         $this->timezone = $timezone;
     }
 
     public function getName()
     {
+        if (0 < $argc = func_num_args()) {
+            trigger_error(sprintf('DateTimeZone::getName() expects exactly 0 parameters, %d given', $argc), E_USER_WARNING);
+
+            return false;
+        }
+
         return $this->timezone;
     }
 
