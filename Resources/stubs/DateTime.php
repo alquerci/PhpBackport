@@ -281,16 +281,12 @@ class DateTime
 
         if (false === $this->isValidTimestamp()) {
             $year = (integer) $this->time['year'];
-            $absYear = abs($year);
-            if (4 > $len = strlen($absYear)) {
-                if (0 > $year) {
-                    $year = '-';
-                } else {
-                    $year = '';
-                }
-
-                $year .= str_repeat('0', 4 - $len).$absYear;
+            $sign = '';
+            if (0 > $year) {
+                $sign = '-';
+                $year *= -1;
             }
+            $year = $sign.str_pad($year, 4, '0', STR_PAD_LEFT);
 
             $dayText = 'Thursday';
             if (true === $this->time['have_relative'] && true === $this->time['relative']['have_weekday_relative']) {
