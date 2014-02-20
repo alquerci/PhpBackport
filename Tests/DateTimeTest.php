@@ -848,9 +848,9 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
 
         $datetime = new DateTime("2009-01-30 19:34:10");
 
-        $this->assertEquals('Fri, 30 Jan 2009 19:34:10 +0000', $datetime->format(DATE_RFC2822));
+        $this->assertEquals('Fri, 30 Jan 2009 19:34:10 +0000', $datetime->format(DateTime::RFC2822));
         $datetime->setDate(2008, 02, 01);
-        $this->assertEquals('Fri, 01 Feb 2008 19:34:10 +0000', $datetime->format(DATE_RFC2822));
+        $this->assertEquals('Fri, 01 Feb 2008 19:34:10 +0000', $datetime->format(DateTime::RFC2822));
     }
 
     public function testSetDateErrorWithZeroArguments()
@@ -1133,7 +1133,7 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
         // Create a DateTime object
         $datetime = new DateTime("2009-01-31 15:14:10");
 
-        $this->assertEquals('Sat, 31 Jan 2009 15:14:10 +0000', $datetime ->format(DATE_RFC2822));
+        $this->assertEquals('Sat, 31 Jan 2009 15:14:10 +0000', $datetime ->format(DateTime::RFC2822));
 
         if (null === $second) {
             $datetime->setTime($hour, $minute);
@@ -1141,7 +1141,7 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             $datetime->setTime($hour, $minute, $second);
         }
 
-        $this->assertEquals($expected, $datetime ->format(DATE_RFC2822));
+        $this->assertEquals($expected, $datetime ->format(DateTime::RFC2822));
     }
 
     public function getSetTimeBasic1Data()
