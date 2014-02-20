@@ -292,16 +292,18 @@ class DateTime
                 $year .= str_repeat('0', 4 - $len).$absYear;
             }
 
-            $format = preg_replace('/(^|[^\x5C]|\x5C\x5C)Y/', '${1}'.$year, $format);
-            $format = preg_replace('/(^|[^\x5C]|\x5C\x5C)y/', '${1}'.substr($year, -2), $format);
-
             $dayText = 'Thursday';
             if (true === $this->time['have_relative'] && true === $this->time['relative']['have_weekday_relative']) {
                 $dayText = $this->time['relative']['weekday_textual'];
             }
             $dayText = '\\'.implode('\\', str_split($dayText));
-            $format = preg_replace('/(^|[^\x5C]|\x5C\x5C)l/', '${1}'.$dayText, $format);
-            $format = preg_replace('/(^|[^\x5C]|\x5C\x5C)D/', '${1}'.substr($dayText, 0, 6), $format);
+
+            $format = $this->formatReplace($format, array(
+                'Y' => $year,
+                'y' => substr($year, -2),
+                'l' => $dayText,
+                'D' => substr($dayText, 0, 6),
+            ));
         }
 
         // backup current timezone
@@ -313,7 +315,7 @@ class DateTime
             $timezoneOffset -= date('Z', $timestamp);
 
             if ('GMT' === date('T')) {
-                $format = preg_replace('/(^|(?:[\x5C]{2})+|[^\x5C])T/', '${1}TO', $format);
+                $format = $this->formatReplace($format, array('T' => 'TO'));
             }
         }
 
@@ -1190,5 +1192,18 @@ class DateTime
         date_default_timezone_set($tzIdentifier);
 
         return $timestampDiff;
+    }
+
+    private function formatReplace($format, array $replacePairs)
+    {
+        $pattern = array();
+        $replacement = array();
+
+        foreach ($replacePairs as $from => $to) {
+            $pattern[] = '/((?:^|[^\x5C])(?:\x5C\x5C)*)'.preg_quote($from, '/').'/';
+            $replacement[] = '${1}'.$to;
+        }
+
+        return preg_replace($pattern, $replacement, $format);
     }
 }

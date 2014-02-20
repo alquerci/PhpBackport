@@ -129,7 +129,6 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
         date_default_timezone_set("Europe/London");
 
         $date = new DateTime("2005-07-14 22:30:41");
-
         $this->assertSame($expected, $date->format($format));
     }
 
@@ -177,6 +176,35 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             array('2005-07-14T22:30:41+01:00', DateTime::RFC3339),
             array('Thu, 14 Jul 2005 22:30:41 +0100', DateTime::RSS),
             array('2005-07-14T22:30:41+01:00', DateTime::W3C),
+        );
+    }
+
+    /**
+     * @dataProvider getFormatWithBackslashesData
+     *
+     * @param string $format
+     * @param string $expected
+     */
+    public function testFormatWithBackslashes($format, $expected)
+    {
+        date_default_timezone_set("Europe/London");
+
+        $date = DateTime::createFromFormat('U', 0);
+
+        $this->assertSame($expected, $date->format($format));
+    }
+
+    public function getFormatWithBackslashesData()
+    {
+        return array(
+            array('T', 'GMT+0000'),
+            array('\\T', 'T'),
+            array('\\\\T', '\\GMT+0000'),
+            array('\\\\\\T', '\\T'),
+            array('_T', '_GMT+0000'),
+            array('_\\T', '_T'),
+            array('_\\\\T', '_\\GMT+0000'),
+            array('_\\\\\\T', '_\\T'),
         );
     }
 
