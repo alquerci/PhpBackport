@@ -86,6 +86,11 @@ class DateTime
     private $timezone;
 
     /**
+     * @var DateTimeZone
+     */
+    private $defaultTimezone;
+
+    /**
      * First argument passed to the constructor
      *
      * @var mixed
@@ -99,9 +104,24 @@ class DateTime
      */
     private $time;
 
+    private $isLocal = false;
+
+    private static $timezoneRegex = '(?x:
+        (?P<tzcorrection> # timezone correction
+            (?:GMT)(?P<tzsignal>[+-])(?P<tzhours>0?[1-9]|1[0-2]):?(?P<tzminutes>[0-5][0-9])?
+        )
+        |(?P<tz> # timezone name
+            \(?[A-Za-z]{1,6}\)?
+            |[A-Z][a-z]+([_\/][A-Z][a-z]+)+
+        )
+    )';
+
     public function __construct($time = null, DateTimeZone $timezone = null)
     {
-        if (false === $this->timestamp = strtotime(strlen($time) ? $time : 'now')) {
+        $date = strlen($time) ? $time : 'now';
+        $timestamp = strtotime($date);
+
+        if (false === $timestamp) {
             if (is_string($time)) {
                 $message = sprintf('Faild to parse string "%s"', $time);;
             } else {
@@ -111,8 +131,50 @@ class DateTime
             throw new Exception($message);
         }
 
+        // Fixed the timestamp if $time does not specifies a timezone
+        if (0 !== strpos($date, '@')) {
+            if (preg_match('/'.self::$timezoneRegex.'$/', $date, $matches)) {
+                if (null === $timezone) {
+                    if (isset($matches['tz'])) {
+                        try {
+                            $timezone = new DateTimeZone($matches['tz']);
+                        } catch (Exception $e) {
+                        }
+                    } elseif (isset($matches['tzcorrection'])) {
+                        $hours   = (int) $matches['tzhours'];
+                        $minutes = (int) $matches['tzminutes'];
+                        $signal  = $matches['tzsignal'] == '-' ? -1 : 1;
+                        $timezone = new DateTimeZone('GMT');
+
+                        $this->time['have_relative'] = true;
+                        $this->time['zone_type'] = 'OFFSET';
+                        $this->time['tz_offset'] = $signal * ($hours * 3600 + $minutes * 60);
+                        $this->time['relative'] = array(
+                            'have_weekday_relative' => false,
+                            'hour'                  => $hours,
+                            'minute'                => $minutes,
+                            'second'                => null,
+                            'month'                 => null,
+                            'day'                   => null,
+                            'year'                  => null,
+                            'is_dst'                => -1,
+                            'weekday'               => null,
+                        );
+                    }
+                }
+            } elseif (null !== $timezone) {
+                $timestamp += date('Z');
+            }
+        }
+
+        if (null === $timezone) {
+            $this->isLocal = true;
+            $this->defaultTimezone = new DateTimeZone(date_default_timezone_get());
+        }
+
         $this->date = $time;
         $this->timezone = $timezone;
+        $this->timestamp = $timestamp;
     }
 
     /**
@@ -217,13 +279,7 @@ class DateTime
     public function getTimezone()
     {
         if (null === $this->timezone) {
-            if ('GMT' === $this->date
-                || (strlen($this->date) - strlen('GMT')) === strpos($this->date, 'GMT')
-            ) {
-                return new DateTimeZone('GMT');
-            } else {
-                return new DateTimeZone(date_default_timezone_get());
-            }
+            return $this->defaultTimezone;
         }
 
         return $this->timezone;
@@ -302,19 +358,39 @@ class DateTime
                     'O' => '+0845',
                     'P' => '+08:45',
                     'T' => '\\C\\W\\S\\T',
+                    'e' => '\\A\\u\\s\\t\\r\\a\\l\\i\\a\\/\\E\\u\\c\\l\\a',
                 ));
+
+                if (false === $this->isLocal && null !== $this->timezone) {
+                    $timezoneOffset = 0;
+                }
 
                 break;
             default:
                 break;
         }
 
-        if (null !== $this->timezone) {
+        if (false === $this->isLocal) {
             $timezoneOffset -= date('Z', $timestamp);
 
             if ('GMT' === date('T')) {
                 $format = $this->formatReplace($format, array('T' => 'TO'));
             }
+        }
+
+        if ($this->time['have_relative'] && 'OFFSET' === $this->time['zone_type']) {
+            $relative = $this->time['relative'];
+            $hours   = str_pad($relative['hour'], 2, '0', STR_PAD_LEFT);
+            $minutes = str_pad($relative['minute'], 2, '0', STR_PAD_LEFT);
+            $offset = $this->time['tz_offset'];
+            $signal  = 0 < $offset ? '+' : '-';
+
+            $format = $this->formatReplace($format, array(
+                'U' => $timestamp - $offset,
+                'P' => $signal.$hours.':'.$minutes,
+                'O' => $signal.$hours.$minutes,
+                'e' => $signal.$hours.':'.$minutes,
+            ));
         }
 
         $date = date($format, $timestamp + $timezoneOffset);
@@ -396,6 +472,7 @@ class DateTime
         try {
             $date = new DateTime('@'.$timestamp, $timezone);
             $date->time = $time;
+            $date->time['zone_type'] = 'ID';
 
             return $date;
         } catch (Exception $e) {
@@ -907,7 +984,8 @@ class DateTime
             $time['year'] = $this->isLeap($time['year']) ? 2000 : 2001;
         }
 
-        $this->timestamp = mktime($time['hour'], $time['minute'], $time['second'], $time['month'], $time['day'], $time['year']);
+        $this->timestamp = gmmktime($time['hour'], $time['minute'], $time['second'], $time['month'], $time['day'], $time['year']);
+        $this->isLocal = false;
     }
 
     /**

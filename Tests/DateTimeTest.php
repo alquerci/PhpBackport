@@ -42,18 +42,20 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
 
         $d = new DateTime($value);
 
-        $this->assertEquals($expected, $d->getTimezone()->getName());
+        date_default_timezone_set('America/New_York');
+
+        $this->assertEquals($expected, $d->format('e'));
     }
 
     public function getConstructBasic1Data()
     {
-        // TODO Improve timezone detection
-
         return array(
             array('Europe/London', ''),
             array('GMT', 'GMT'),
             array('Europe/London', '2005-07-14 22:30:41'),
             array('GMT', '2005-07-14 22:30:41 GMT'),
+            array('+08:00', 'GMT+08:00'),
+            array('+08:00', '2005-07-14 22:30:41 GMT+0800'),
         );
     }
 
@@ -115,6 +117,58 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             array(new Instinct_Component_PhpBackport_Tests_DateTimeTestClassWithToString(), $timezone),
             array(new stdClass(), $timezone),
             array(fopen(__FILE__, 'r'), $timezone),
+        );
+    }
+
+    /**
+     * @dataProvider getConstructWithDifferentDefaultTimezoneData
+     *
+     * @param string $defaultTimezone
+     */
+    public function testConstructWithDifferentDefaultTimezone($defaultTimezone, DateTimeZone $timezone = null, $expected = null)
+    {
+        date_default_timezone_set($defaultTimezone);
+
+        $date = new DateTime('01-Jan-70 00:00:00', $timezone);
+
+        $this->assertEquals($expected, $date->format('U'));
+    }
+
+    public function getConstructWithDifferentDefaultTimezoneData()
+    {
+        return array(
+            array('Etc/GMT-1', new DateTimeZone("Australia/Darwin"), -34200),
+            array('Etc/GMT-0', new DateTimeZone("Australia/Darwin"), -34200),
+            array('Etc/GMT+1', new DateTimeZone("Australia/Darwin"), -34200),
+            array('Etc/GMT-1', null, -3600),
+            array('Etc/GMT+0', null, 0),
+            array('Etc/GMT+1', null, 3600),
+        );
+    }
+
+    /**
+     * @dataProvider getConstructWithTimezoneOnTimeData
+     *
+     * @param string $format
+     * @param string $expected
+     */
+    public function testConstructWithTimezoneOnTime($format, $expected)
+    {
+        date_default_timezone_set('Australia/Darwin');
+
+        $date = new DateTime('01-Jan-70 00:00:00 GMT+0802');
+
+        $this->assertEquals($expected, $date->format($format));
+    }
+
+    public function getConstructWithTimezoneOnTimeData()
+    {
+        return array(
+            array('U', '-28920'),
+            array('e', '+08:02'),
+            array(DateTime::COOKIE, 'Thursday, 01-Jan-70 00:00:00 GMT+0802'),
+            array(DateTime::RFC2822, 'Thu, 01 Jan 1970 00:00:00 +0802'),
+            array(DateTime::ATOM, '1970-01-01T00:00:00+08:02'),
         );
     }
 
@@ -341,6 +395,7 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             array('P', '+08:45'),
             array('y', '70'),
             array('Y', '1970'),
+            array('e', 'Australia/Eucla'),
         );
     }
 
@@ -1350,6 +1405,38 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             array(new Instinct_Component_PhpBackport_Tests_DateTimeTestClassWithToString(), false),
             array(new stdClass(), false),
             array(fopen(__FILE__, 'r'), false),
+        );
+    }
+
+    /**
+     * @dataProvider getSetTimezoneData
+     *
+     * @param string  $format
+     * @param string  $timezone
+     * @param integer $expected
+     */
+    public function testSetTimezone($format, $timezone, $expected)
+    {
+        date_default_timezone_set('Australia/ACT');
+
+        $dateTime = new DateTime();
+        $dateTime->setTimestamp(0);
+        $dateTime->setTimezone(new DateTimeZone($timezone));
+        $dateTime->setDate(1970, 1, 1);
+        $dateTime->setTime(0, 0, 0);
+
+        $this->assertEquals($expected, $dateTime->format($format));
+    }
+
+    public function getSetTimezoneData()
+    {
+        return array(
+            array('U', 'Europe/London', -3600),
+            array('U', 'UTC', 0),
+            array('Y-m-d H:i:s', 'UTC', '1970-01-01 00:00:00'),
+            array('Y-m-d H:i:s', 'Europe/London', '1970-01-01 00:00:00'),
+            array('Y-m-d H:i:s', 'Australia/Eucla', '1970-01-01 00:00:00'),
+            array('Y-m-d H:i:s', 'Australia/Melbourne', '1970-01-01 00:00:00'),
         );
     }
 }
