@@ -219,8 +219,23 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
 
         try {
             $this->assertSame($expected, $d->format($format));
-        } catch (ErrorException $e) {
-        } catch (PHPUnit_Framework_Error_Warning $e) {
+
+            if (false === $expected) {
+                $this->fail('DateTime::format() trigger a warning with unexpected value at argument 1 $format');
+            }
+        } catch (PHPUnit_Framework_Error $e) {
+            if (false !== $expected) {
+                throw $e;
+            }
+
+            $this->assertThat($e->getCode(), $this->logicalOr(E_WARNING, E_USER_WARNING));
+            $this->assertEquals(sprintf('DateTime::format() expects parameter 1 to be string, %s given', gettype($format)), $e->getMessage());
+        }
+
+        $this->assertSame($expected, @$d->format($format));
+
+        if (is_resource($format)) {
+            @fclose($format);
         }
     }
 
@@ -247,6 +262,40 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             array(new Instinct_Component_PhpBackport_Tests_DateTimeTestClassWithToString(), 'CThursdaypm4141 PM 2005b14Europe/London2005-07-14T22:30:41+01:0031'),
             array(new stdClass(), false),
             array(fopen(__FILE__, 'r'), false),
+        );
+    }
+
+    /**
+     * @dataProvider getFormatOutOfTimestampRangeData
+     *
+     * @param string $format
+     * @param string $expected
+     */
+    public function testFormatOutOfTimestampRange($format, $expected)
+    {
+        date_default_timezone_set("Australia/Darwin");
+
+        $date = DateTime::createFromFormat(DateTime::RFC2822, 'Sat, 01 Jan 0000 00:00:00 +0000');
+        $this->assertThat($date, $this->isInstanceOf('DateTime'));
+
+        $this->assertEquals($expected, $date->format($format));
+    }
+
+    public function getFormatOutOfTimestampRangeData()
+    {
+        return array(
+            array(DateTime::ATOM, '0000-01-01T00:00:00+00:00'),
+            array(DateTime::COOKIE, 'Saturday, 01-Jan-00 00:00:00 GMT+0000'),
+            array(DateTime::ISO8601, '0000-01-01T00:00:00+0000'),
+            array(DateTime::RFC1036, 'Sat, 01 Jan 00 00:00:00 +0000'),
+            array(DateTime::RFC1123, 'Sat, 01 Jan 0000 00:00:00 +0000'),
+            array(DateTime::RFC2822, 'Sat, 01 Jan 0000 00:00:00 +0000'),
+            array(DateTime::RFC2822, 'Sat, 01 Jan 0000 00:00:00 +0000'),
+            array(DateTime::RFC3339, '0000-01-01T00:00:00+00:00'),
+            array(DateTime::RFC822, 'Sat, 01 Jan 00 00:00:00 +0000'),
+            array(DateTime::RFC850, 'Saturday, 01-Jan-00 00:00:00 GMT+0000'),
+            array(DateTime::RSS, 'Sat, 01 Jan 0000 00:00:00 +0000'),
+            array(DateTime::W3C, '0000-01-01T00:00:00+00:00'),
         );
     }
 
@@ -306,6 +355,126 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             array(1596185377, 'D, d-m-y H:i:s T', 'Fri, 31-07-20 08:49:37 GMT', new DateTimeZone('GMT')),
             array(1596167377, 'D, d-m-y H:i:s T', 'Fri, 31-07-20 08:49:37 GMT+0500', new DateTimeZone('GMT')),
             array(1596167377, 'D, d-m-y H:i:s TO', 'Fri, 31-07-20 08:49:37 GMT+0500+05:00', new DateTimeZone('GMT')),
+        );
+    }
+
+    /**
+     * @dataProvider getCreateFromFormatPassingUnexpectedValuesForArgument1Data
+     *
+     * @param mixed   $format
+     * @param Boolean $warning Must trigger a warning
+     */
+    public function testCreateFromFormatPassingUnexpectedValuesForArgument1($format, $warning = false)
+    {
+        date_default_timezone_set("Europe/London");
+
+        $time = 'Thu, 14 Jul 2005 22:30:41 +0100';
+
+        try {
+            $this->assertFalse(DateTime::createFromFormat($format, $time));
+
+            if ($warning) {
+                $this->fail('DateTime::createFromFormat() trigger a warning with unexpected value at argument 1 $format');
+            }
+        } catch (PHPUnit_Framework_Error $e) {
+            if (false === $warning) {
+                throw $e;
+            }
+
+            $this->assertThat($e->getCode(), $this->logicalOr(E_WARNING, E_USER_WARNING));
+            $this->assertEquals(sprintf('DateTime::createFromFormat() expects parameter 1 to be string, %s given', gettype($format)), $e->getMessage());
+        }
+
+        $this->assertFalse(@DateTime::createFromFormat($format, $time));
+
+        if (is_resource($format)) {
+            @fclose($format);
+        }
+    }
+
+    public function getCreateFromFormatPassingUnexpectedValuesForArgument1Data()
+    {
+        return array(
+            array(0),
+            array(1),
+            array(12345),
+            array(-12345),
+            array(10.5),
+            array(-10.5),
+            array(.5),
+            array(array(), true),
+            array(array(1, 2, 3), true),
+            array(array('one' => 1, 'two' => 2), true),
+            array(null),
+            array(true),
+            array(false),
+            array(''),
+            array('string'),
+            array('sTrInG'),
+            array('hello world'),
+            array(new Instinct_Component_PhpBackport_Tests_DateTimeTestClassWithToString()),
+            array(new stdClass(), true),
+            array(fopen(__FILE__, 'r'), true),
+        );
+    }
+
+    /**
+     * @dataProvider getCreateFromFormatPassingUnexpectedValuesForArgument2Data
+     *
+     * @param mixed   $time
+     * @param Boolean $warning Must trigger a warning
+     */
+    public function testCreateFromFormatPassingUnexpectedValuesForArgument2($time, $warning = false)
+    {
+        date_default_timezone_set("Europe/London");
+
+        $format = DateTime::RFC2822;
+
+        try {
+            $this->assertFalse(DateTime::createFromFormat($format, $time));
+
+            if ($warning) {
+                $this->fail('DateTime::createFromFormat() trigger a warning with unexpected value at argument 2 $time');
+            }
+        } catch (PHPUnit_Framework_Error $e) {
+            if (false === $warning) {
+                throw $e;
+            }
+
+            $this->assertThat($e->getCode(), $this->logicalOr(E_WARNING, E_USER_WARNING));
+            $this->assertEquals(sprintf('DateTime::createFromFormat() expects parameter 2 to be string, %s given', gettype($time)), $e->getMessage());
+        }
+
+        $this->assertFalse(@DateTime::createFromFormat($format, $time));
+
+        if (is_resource($time)) {
+            @fclose($time);
+        }
+    }
+
+    public function getCreateFromFormatPassingUnexpectedValuesForArgument2Data()
+    {
+        return array(
+            array(0),
+            array(1),
+            array(12345),
+            array(-12345),
+            array(10.5),
+            array(-10.5),
+            array(.5),
+            array(array(), true),
+            array(array(1, 2, 3), true),
+            array(array('one' => 1, 'two' => 2), true),
+            array(null),
+            array(true),
+            array(false),
+            array(''),
+            array('string'),
+            array('sTrInG'),
+            array('hello world'),
+            array(new Instinct_Component_PhpBackport_Tests_DateTimeTestClassWithToString()),
+            array(new stdClass(), true),
+            array(fopen(__FILE__, 'r'), true),
         );
     }
 

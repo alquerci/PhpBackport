@@ -132,37 +132,27 @@ class DateTime
             return false;
         }
 
-        if (null === $year || false === $year) {
-            $year = 0;
-        }
-        if (!is_scalar($year) || is_string($year)) {
-            trigger_error(sprintf('DateTime::setDate() expects parameter 1 to be long, %s given', gettype($year)), E_USER_WARNING);
+        $args = array(1 => $year, 2 => $month, 3 => $day);
 
-            return false;
-        }
+        foreach ($args as $argno => $arg) {
+            if (null === $arg || false === $arg) {
+                $arg = 0;
+            }
 
-        if (null === $month || false === $month) {
-            $month = 0;
-        }
-        if (!is_scalar($month) || is_string($month)) {
-            trigger_error(sprintf('DateTime::setDate() expects parameter 2 to be long, %s given', gettype($month)), E_USER_WARNING);
+            if (!is_scalar($arg) || is_string($arg)) {
+                trigger_error(sprintf('DateTime::setDate() expects parameter %d to be long, %s given', $argno, gettype($arg)), E_USER_WARNING);
 
-            return false;
+                return false;
+            }
+
+            $args[$argno] = (integer) $arg;
         }
 
-        if (null === $day || false === $day) {
-            $day = 0;
-        }
-        if (!is_scalar($day) || is_string($day)) {
-            trigger_error(sprintf('DateTime::setDate() expects parameter 3 to be long, %s given', gettype($day)), E_USER_WARNING);
-
-            return false;
-        }
+        $this->time['year'] = $args[1];
+        $this->time['month'] = $args[2];
+        $this->time['day'] = $args[3];
 
         $time = $this->getTime();
-        $time['year'] = (integer) $year;
-        $time['month'] = (integer) $month;
-        $time['day'] = (integer) $day;
 
         $this->updateTs($time);
 
@@ -192,37 +182,27 @@ class DateTime
             return false;
         }
 
-        if (null === $hour || false === $hour) {
-            $hour = 0;
-        }
-        if (!is_scalar($hour) || is_string($hour)) {
-            trigger_error(sprintf('DateTime::setTime() expects parameter 1 to be long, %s given', gettype($hour)), E_USER_WARNING);
+        $args = array(1 => $hour, 2 => $minute, 3 => $second);
 
-            return false;
-        }
+        foreach ($args as $argno => $arg) {
+            if (null === $arg || false === $arg) {
+                $arg = 0;
+            }
 
-        if (null === $minute || false === $minute) {
-            $minute = 0;
-        }
-        if (!is_scalar($minute) || is_string($minute)) {
-            trigger_error(sprintf('DateTime::setTime() expects parameter 2 to be long, %s given', gettype($minute)), E_USER_WARNING);
+            if (!is_scalar($arg) || is_string($arg)) {
+                trigger_error(sprintf('DateTime::setTime() expects parameter %d to be long, %s given', $argno, gettype($arg)), E_USER_WARNING);
 
-            return false;
+                return false;
+            }
+
+            $args[$argno] = (integer) $arg;
         }
 
-        if (null === $second || false === $second) {
-            $second = 0;
-        }
-        if (!is_scalar($second) || is_string($second)) {
-            trigger_error(sprintf('DateTime::setTime() expects parameter 3 to be long, %s given', gettype($second)), E_USER_WARNING);
-
-            return false;
-        }
+        $this->time['hour'] = $args[1];
+        $this->time['minute'] = $args[2];
+        $this->time['second'] = $args[3];
 
         $time = $this->getTime();
-        $time['hour'] = (integer) $hour;
-        $time['minute'] = (integer) $minute;
-        $time['second'] = (integer) $second;
 
         $this->updateTs($time);
 
@@ -274,6 +254,14 @@ class DateTime
 
     public function format($format)
     {
+        $format = (is_object($format) && method_exists($format, '__toString')) ? $format->__toString() : $format;
+
+        if (null !== $format && !is_scalar($format)) {
+            trigger_error(sprintf('DateTime::format() expects parameter 1 to be string, %s given', gettype($format)), E_USER_WARNING);
+
+            return false;
+        }
+
         $timezone = $this->getTimezone();
         $timestamp = $this->timestamp;
         $timezoneOffset = 0;
@@ -332,6 +320,21 @@ class DateTime
      */
     public static function createFromFormat($format, $time, DateTimeZone $timezone = null)
     {
+        $args = array(1 => $format, 2 => $time);
+
+        foreach ($args as $argno => $arg) {
+            $args[$argno] = $arg = (is_object($arg) && method_exists($arg, '__toString')) ? $arg->__toString() : $arg;
+
+            if (null !== $arg && !is_scalar($arg)) {
+                trigger_error(sprintf('DateTime::createFromFormat() expects parameter %d to be string, %s given', $argno, gettype($arg)), E_USER_WARNING);
+
+                return false;
+            }
+        }
+
+        $format = $args[1];
+        $time = $args[2];
+
         try {
             $time = self::parseFromFormat($format, $time);
         } catch (Exception $e) {
