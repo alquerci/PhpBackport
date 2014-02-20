@@ -300,6 +300,51 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
     }
 
     /**
+     * @dataProvider getFormatSpecialTimezoneData
+     *
+     * @param string $format
+     * @param string $expected
+     */
+    public function testFormatSpecialTimezone($format, $expected = null)
+    {
+        date_default_timezone_set('Europe/London');
+
+        $dateTime = new DateTime();
+        $dateTime->setTimestamp(0);
+        $dateTime->setTimezone(new DateTimeZone('Australia/Eucla'));
+
+        $this->assertEquals($expected, $dateTime->format($format));
+        $this->assertEquals($format, $dateTime->format('\\'.$format));
+        $this->assertEquals('\\'.$expected, $dateTime->format('\\\\'.$format));
+        $this->assertEquals('\\'.$format, $dateTime->format('\\\\\\'.$format));
+    }
+
+    public function getFormatSpecialTimezoneData()
+    {
+        return array(
+            array('A', 'AM'),
+            array('l', 'Thursday'),
+            array('z', '0'),
+            array('j', '1'),
+            array('g', '8'),
+            array('G', '8'),
+            array('i', '45'),
+            array('n', '1'),
+            array('m', '01'),
+            array('M', 'Jan'),
+            array('F', 'January'),
+            array('n', '1'),
+            array('s', '00'),
+            array('U', '0'),
+            array('O', '+0845'),
+            array('T', 'CWST'),
+            array('P', '+08:45'),
+            array('y', '70'),
+            array('Y', '1970'),
+        );
+    }
+
+    /**
      * @dataProvider getCreateFromFormatData
      *
      * @param mixed             $expected

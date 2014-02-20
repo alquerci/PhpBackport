@@ -295,6 +295,20 @@ class DateTime
 
         $timezoneOffset -= $this->setDefaultTimezone($timezoneName);
 
+        switch ($timezoneName) {
+            case 'Australia/Eucla':
+                $format = $this->formatReplace($format, array(
+                    'U' => $timestamp,
+                    'O' => '+0845',
+                    'P' => '+08:45',
+                    'T' => '\\C\\W\\S\\T',
+                ));
+
+                break;
+            default:
+                break;
+        }
+
         if (null !== $this->timezone) {
             $timezoneOffset -= date('Z', $timestamp);
 
