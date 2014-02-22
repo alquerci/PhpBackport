@@ -145,6 +145,7 @@ class DateTime
                     if (isset($matches['tz'])) {
                         try {
                             $timezone = new DateTimeZone($matches['tz']);
+                            $this->isLocal = true;
                         } catch (Exception $e) {
                         }
                     } elseif (isset($matches['tzcorrection'])) {

@@ -158,12 +158,13 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
      *
      * @param string $format
      * @param string $expected
+     * @param string $time
      */
-    public function testConstructWithTimezoneOnTime($format, $expected)
+    public function testConstructWithTimezoneOnTime($format, $expected, $time = '01-Jan-70 00:00:00 GMT+0802')
     {
         date_default_timezone_set('Australia/Darwin');
 
-        $date = new DateTime('01-Jan-70 00:00:00 GMT+0802');
+        $date = new DateTime($time);
 
         $this->assertEquals($expected, $date->format($format));
     }
@@ -176,6 +177,7 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             array(DateTime::COOKIE, 'Thursday, 01-Jan-70 00:00:00 GMT+0802'),
             array(DateTime::RFC2822, 'Thu, 01 Jan 1970 00:00:00 +0802'),
             array(DateTime::ATOM, '1970-01-01T00:00:00+08:02'),
+            array('c', '1970-01-01T00:00:00-05:00', '01-Jan-70 00:00:00 America/New_York'),
         );
     }
 
