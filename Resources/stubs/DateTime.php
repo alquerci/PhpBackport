@@ -115,7 +115,7 @@ class DateTime
 
     private static $timezoneRegex = '(?x:
         (?P<tzcorrection> # timezone correction
-            (?:GMT)(?P<tzsignal>[+-])(?P<tzhours>0?[1-9]|1[0-2]):?(?P<tzminutes>[0-5][0-9])?
+            (?:GMT)?(?P<tzsignal>[+-])(?P<tzhours>0?[1-9]|1[0-2]):?(?P<tzminutes>[0-5][0-9])?
         )
         |(?P<tz> # timezone name
             \(?[A-Za-z]{1,6}\)?
@@ -139,40 +139,42 @@ class DateTime
         }
 
         // Fixed the timestamp if $time does not specifies a timezone
-        if (0 !== strpos($date, '@')) {
+        if (null === $timezone) {
             if (preg_match('/'.self::$timezoneRegex.'$/', $date, $matches)) {
-                if (null === $timezone) {
-                    if (isset($matches['tz'])) {
-                        try {
-                            $timezone = new DateTimeZone($matches['tz']);
-                            $this->isLocal = true;
-                        } catch (Exception $e) {
-                        }
-                    } elseif (isset($matches['tzcorrection'])) {
-                        $hours   = (int) $matches['tzhours'];
-                        $minutes = (int) $matches['tzminutes'];
-                        $signal  = $matches['tzsignal'] == '-' ? -1 : 1;
-                        $timezone = new DateTimeZone('GMT');
+                if (isset($matches['tz'])) {
+                    try {
+                        $timezone = new DateTimeZone($matches['tz']);
+                        $this->isLocal = true;
+                    } catch (Exception $e) {
+                    }
+                } elseif (isset($matches['tzcorrection'])) {
+                    $hours   = (int) $matches['tzhours'];
+                    $minutes = (int) $matches['tzminutes'];
+                    $signal  = $matches['tzsignal'] == '-' ? -1 : 1;
+                    $timezone = new DateTimeZone('GMT');
 
-                        $this->time['have_relative'] = true;
-                        $this->time['zone_type'] = 'OFFSET';
-                        $this->time['tz_offset'] = $signal * ($hours * 3600 + $minutes * 60);
-                        $this->time['relative'] = array(
-                            'have_weekday_relative' => false,
-                            'hour'                  => $hours,
-                            'minute'                => $minutes,
-                            'second'                => null,
-                            'month'                 => null,
-                            'day'                   => null,
-                            'year'                  => null,
-                            'is_dst'                => -1,
-                            'weekday'               => null,
-                        );
+                    $this->time['have_relative'] = true;
+                    $this->time['zone_type'] = 'OFFSET';
+                    $this->time['tz_offset'] = $signal * ($hours * 3600 + $minutes * 60);
+                    $this->time['relative'] = array(
+                        'have_weekday_relative' => false,
+                        'hour'                  => $hours,
+                        'minute'                => $minutes,
+                        'second'                => null,
+                        'month'                 => null,
+                        'day'                   => null,
+                        'year'                  => null,
+                        'is_dst'                => -1,
+                        'weekday'               => null,
+                    );
+
+                    if (0 !== strpos($matches['tzcorrection'], 'GMT')) {
+                        $timestamp += $this->time['tz_offset'];
                     }
                 }
-            } elseif (null !== $timezone) {
-                $timestamp += date('Z');
             }
+        } elseif (0 !== strpos($date, '@') && 'now' !== $date) {
+            $timestamp += date('Z');
         }
 
         if (null === $timezone) {
