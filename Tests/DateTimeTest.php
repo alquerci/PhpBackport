@@ -179,6 +179,8 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             array(DateTime::ATOM, '1970-01-01T00:00:00+08:02'),
             array('c', '1970-01-01T00:00:00-05:00', '01-Jan-70 00:00:00 America/New_York'),
             array('c', '1970-01-01T00:00:00+00:00', '@0 UTC'),
+            array('c', '1970-01-01T00:00:00+08:02', '01-Jan-70 00:00:00 +08:02'),
+            array('r', 'Thu, 01 Jan 1970 00:00:00 +0802', '01-Jan-70 00:00:00 +08:02'),
         );
     }
 
@@ -367,6 +369,8 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             array(DateTime::RFC850, 'Saturday, 01-Jan-00 00:00:00 GMT+0000'),
             array(DateTime::RSS, 'Sat, 01 Jan 0000 00:00:00 +0000'),
             array(DateTime::W3C, '0000-01-01T00:00:00+00:00'),
+            array('c', '0000-01-01T00:00:00+00:00'),
+            array('r', 'Sat, 01 Jan 0000 00:00:00 +0000'),
         );
     }
 
@@ -413,6 +417,8 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             array('y', '70'),
             array('Y', '1970'),
             array('e', 'Australia/Eucla'),
+            array('c', '1970-01-01T08:45:00+08:45'),
+            array('r', 'Thu, 01 Jan 1970 08:45:00 +0845'),
         );
     }
 

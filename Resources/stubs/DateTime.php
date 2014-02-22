@@ -345,6 +345,8 @@ class DateTime
                 'y' => substr($year, -2),
                 'l' => $dayText,
                 'D' => substr($dayText, 0, 6),
+                'c' => $year.'-m-d\\TH:i:sP',
+                'r' => substr($dayText, 0, 6).', d M '.$year.' H:i:s O',
             ));
         }
 
@@ -361,6 +363,8 @@ class DateTime
                     'P' => '+08:45',
                     'T' => '\\C\\W\\S\\T',
                     'e' => '\\A\\u\\s\\t\\r\\a\\l\\i\\a\\/\\E\\u\\c\\l\\a',
+                    'c' => 'Y-m-d\\TH:i:s+08:45',
+                    'r' => 'D, d M Y H:i:s +0845',
                 ));
 
                 if (false === $this->isLocal && null !== $this->timezone) {
@@ -392,6 +396,8 @@ class DateTime
                 'P' => $signal.$hours.':'.$minutes,
                 'O' => $signal.$hours.$minutes,
                 'e' => $signal.$hours.':'.$minutes,
+                'c' => 'Y-m-d\\TH:i:s'.$signal.$hours.':'.$minutes,
+                'r' => 'D, d M Y H:i:s '.$signal.$hours.$minutes,
             ));
         }
 
