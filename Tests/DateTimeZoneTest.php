@@ -110,6 +110,13 @@ class Instinct_Component_PhpBackport_Tests_DateTimeZoneTest extends PHPUnit_Fram
             array(new Instinct_Component_PhpBackport_Tests_DateTimeZoneTestClassWithToString(), 'DateTimeZone::__construct(): Unknown or bad timezone (Class A object)'),
             array(new stdClass(), 'DateTimeZone::__construct() expects parameter 1 to be string, object given'),
             array(fopen(__FILE__, 'r'), 'DateTimeZone::__construct() expects parameter 1 to be string, resource given'),
+            array('0', 'DateTimeZone::__construct(): Unknown or bad timezone (0)'),
+            array('1', 'DateTimeZone::__construct(): Unknown or bad timezone (1)'),
+            array('12345', 'DateTimeZone::__construct(): Unknown or bad timezone (12345)'),
+            array('-12345', 'DateTimeZone::__construct(): Unknown or bad timezone (-12345)'),
+            array('10.5', 'DateTimeZone::__construct(): Unknown or bad timezone (10.5)'),
+            array('-10.5', 'DateTimeZone::__construct(): Unknown or bad timezone (-10.5)'),
+            array('.5', 'DateTimeZone::__construct(): Unknown or bad timezone (.5)'),
         );
     }
 

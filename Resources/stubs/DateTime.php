@@ -197,11 +197,7 @@ class DateTime
         $args = array(1 => $year, 2 => $month, 3 => $day);
 
         foreach ($args as $argno => $arg) {
-            if (null === $arg || false === $arg) {
-                $arg = 0;
-            }
-
-            if (!is_scalar($arg) || is_string($arg)) {
+            if (null !== $arg && !is_scalar($arg) || is_string($arg) && !is_numeric($arg)) {
                 trigger_error(sprintf('DateTime::setDate() expects parameter %d to be long, %s given', $argno, gettype($arg)), E_USER_WARNING);
 
                 return false;
@@ -247,11 +243,7 @@ class DateTime
         $args = array(1 => $hour, 2 => $minute, 3 => $second);
 
         foreach ($args as $argno => $arg) {
-            if (null === $arg || false === $arg) {
-                $arg = 0;
-            }
-
-            if (!is_scalar($arg) || is_string($arg)) {
+            if (null !== $arg && !is_scalar($arg) || is_string($arg) && !is_numeric($arg)) {
                 trigger_error(sprintf('DateTime::setTime() expects parameter %d to be long, %s given', $argno, gettype($arg)), E_USER_WARNING);
 
                 return false;

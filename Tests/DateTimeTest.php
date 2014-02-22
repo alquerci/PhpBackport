@@ -117,6 +117,13 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             array(new Instinct_Component_PhpBackport_Tests_DateTimeTestClassWithToString(), $timezone),
             array(new stdClass(), $timezone),
             array(fopen(__FILE__, 'r'), $timezone),
+            array('0', $timezone),
+            array('1', $timezone),
+            array('12345', $timezone),
+            array('-12345', $timezone),
+            array('10.5', $timezone, "Europe/London"),
+            array('-10.5', $timezone),
+            array('.5', $timezone, "Europe/London"),
         );
     }
 
@@ -316,6 +323,13 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             array(new Instinct_Component_PhpBackport_Tests_DateTimeTestClassWithToString(), 'CThursdaypm4141 PM 2005b14Europe/London2005-07-14T22:30:41+01:0031'),
             array(new stdClass(), false),
             array(fopen(__FILE__, 'r'), false),
+            array('0', '0'),
+            array('1', '1'),
+            array('12345', '12345'),
+            array('-12345', '-12345'),
+            array('10.5', '10.5'),
+            array('-10.5', '-10.5'),
+            array('.5', '.5'),
         );
     }
 
@@ -515,6 +529,13 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             array(new Instinct_Component_PhpBackport_Tests_DateTimeTestClassWithToString()),
             array(new stdClass(), true),
             array(fopen(__FILE__, 'r'), true),
+            array('0'),
+            array('1'),
+            array('12345'),
+            array('-12345'),
+            array('10.5'),
+            array('-10.5'),
+            array('.5'),
         );
     }
 
@@ -575,6 +596,13 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             array(new Instinct_Component_PhpBackport_Tests_DateTimeTestClassWithToString()),
             array(new stdClass(), true),
             array(fopen(__FILE__, 'r'), true),
+            array('0'),
+            array('1'),
+            array('12345'),
+            array('-12345'),
+            array('10.5'),
+            array('-10.5'),
+            array('.5'),
         );
     }
 
@@ -982,6 +1010,13 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             array(new Instinct_Component_PhpBackport_Tests_DateTimeTestClassWithToString(), false),
             array(new stdClass(), false),
             array(fopen(__FILE__, 'r'), false),
+            array('0', array('ts' => false, 'date' => '0000-07-02 08:34:10')),
+            array('1', array('ts' => false, 'date' => '0001-07-02 08:34:10')),
+            array('12345', array('ts' => false, 'date' => '12345-07-02 08:34:10')),
+            array('-12345', array('ts' => false, 'date' => '-12345-07-02 08:34:10')),
+            array('10.5', array('ts' => false, 'date' => '0010-07-02 08:34:10')),
+            array('-10.5', array('ts' => false, 'date' => '-0010-07-02 08:34:10')),
+            array('.5', array('ts' => false, 'date' => '0000-07-02 08:34:10')),
         );
     }
 
@@ -1048,6 +1083,13 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             array(new Instinct_Component_PhpBackport_Tests_DateTimeTestClassWithToString(), false),
             array(new stdClass(), false),
             array(fopen(__FILE__, 'r'), false),
+            array('0', array('ts' => -223485950, 'date' => '1962-12-02 08:34:10')),
+            array('1', array('ts' => -220807550, 'date' => '1963-01-02 08:34:10')),
+            array('12345', array('ts' => false, 'date' => '2991-09-02 08:34:10')),
+            array('-12345', array('ts' => false, 'date' => '0934-03-02 08:34:10')),
+            array('10.5', array('ts' => -197223950, 'date' => '1963-10-02 08:34:10')),
+            array('-10.5', array('ts' => -249665150, 'date' => '1962-02-02 08:34:10')),
+            array('.5', array('ts' => -223485950, 'date' => '1962-12-02 08:34:10')),
         );
     }
 
@@ -1114,6 +1156,13 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             array(new Instinct_Component_PhpBackport_Tests_DateTimeTestClassWithToString(), false),
             array(new stdClass(), false),
             array(fopen(__FILE__, 'r'), false),
+            array('0', array('ts' => -205345550, 'date' => '1963-06-30 08:34:10')),
+            array('1', array('ts' => -205259150, 'date' => '1963-07-01 08:34:10')),
+            array('12345', array('ts' => 861262450, 'date' => '1997-04-17 08:34:10')),
+            array('-12345', array('ts' => -1271953550, 'date' => '1929-09-11 08:34:10')),
+            array('10.5', array('ts' => -204481550, 'date' => '1963-07-10 08:34:10')),
+            array('-10.5', array('ts' => -206209550, 'date' => '1963-06-20 08:34:10')),
+            array('.5', array('ts' => -205345550, 'date' => '1963-06-30 08:34:10')),
         );
     }
 
@@ -1273,6 +1322,13 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             array(new Instinct_Component_PhpBackport_Tests_DateTimeTestClassWithToString(), false),
             array(new stdClass(), false),
             array(fopen(__FILE__, 'r'), false),
+            array('0', array('ts' => 1233360825, 'date' => '2009-01-31 00:13:45')),
+            array('1', array('ts' => 1233364425, 'date' => '2009-01-31 01:13:45')),
+            array('12345', array('ts' => 1277799225, 'date' => '2010-06-29 09:13:45')),
+            array('-12345', array('ts' => 1188915225, 'date' => '2007-09-04 15:13:45')),
+            array('10.5', array('ts' => 1233396825, 'date' => '2009-01-31 10:13:45')),
+            array('-10.5', array('ts' => 1233324825, 'date' => '2009-01-30 14:13:45')),
+            array('.5', array('ts' => 1233360825, 'date' => '2009-01-31 00:13:45')),
         );
     }
 
@@ -1339,6 +1395,13 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             array(new Instinct_Component_PhpBackport_Tests_DateTimeTestClassWithToString(), false),
             array(new stdClass(), false),
             array(fopen(__FILE__, 'r'), false),
+            array('0', array('ts' => 1233396045, 'date' => '2009-01-31 10:00:45')),
+            array('1', array('ts' => 1233396105, 'date' => '2009-01-31 10:01:45')),
+            array('12345', array('ts' => 1234136745, 'date' => '2009-02-08 23:45:45')),
+            array('-12345', array('ts' => 1232655345, 'date' => '2009-01-22 20:15:45')),
+            array('10.5', array('ts' => 1233396645, 'date' => '2009-01-31 10:10:45')),
+            array('-10.5', array('ts' => 1233395445, 'date' => '2009-01-31 09:50:45')),
+            array('.5', array('ts' => 1233396045, 'date' => '2009-01-31 10:00:45')),
         );
     }
 
@@ -1405,6 +1468,13 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             array(new Instinct_Component_PhpBackport_Tests_DateTimeTestClassWithToString(), false),
             array(new stdClass(), false),
             array(fopen(__FILE__, 'r'), false),
+            array('0', array('ts' => 1233396780, 'date' => '2009-01-31 10:13:00')),
+            array('1', array('ts' => 1233396781, 'date' => '2009-01-31 10:13:01')),
+            array('12345', array('ts' => 1233409125, 'date' => '2009-01-31 13:38:45')),
+            array('-12345', array('ts' => 1233384435, 'date' => '2009-01-31 06:47:15')),
+            array('10.5', array('ts' => 1233396790, 'date' => '2009-01-31 10:13:10')),
+            array('-10.5', array('ts' => 1233396770, 'date' => '2009-01-31 10:12:50')),
+            array('.5', array('ts' => 1233396780, 'date' => '2009-01-31 10:13:00')),
         );
     }
 
