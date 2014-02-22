@@ -623,6 +623,10 @@ class DateTime
                         throw new InvalidArgumentException(sprintf('A three digit day-of-year could not be found near "... %s ..."', substr($string, $stringCursor, 10)));
                     }
 
+                    $time['month'] = 1;
+                    $time['day'] = $match[0] + 1;
+                    $time = self::doNormalize($time);
+
                     break;
                 case 'm': // two digit month, with leading zero
                 case 'n': // two digit month, without leading zero
@@ -1115,26 +1119,26 @@ class DateTime
         return $res;
     }
 
-    private function doNormalize(array $time)
+    private static function doNormalize(array $time)
     {
         if (null !== $time['second']) {
-            do {} while ($this->doRangeLimit(0, 60, 60, $time['second'], $time['minute']));
+            do {} while (self::doRangeLimit(0, 60, 60, $time['second'], $time['minute']));
         }
         if (null !== $time['second']) {
-            do {} while ($this->doRangeLimit(0, 60, 60, $time['minute'], $time['hour']));
+            do {} while (self::doRangeLimit(0, 60, 60, $time['minute'], $time['hour']));
         }
         if (null !== $time['second']) {
-            do {} while ($this->doRangeLimit(0, 24, 24, $time['hour'], $time['day']));
+            do {} while (self::doRangeLimit(0, 24, 24, $time['hour'], $time['day']));
         }
 
-        do {} while ($this->doRangeLimit(1, 13, 12, $time['month'], $time['year']));
-        do {} while ($this->doRangeLimitDays($time['year'], $time['month'], $time['day']));
-        do {} while ($this->doRangeLimit(1, 13, 12, $time['month'], $time['year']));
+        do {} while (self::doRangeLimit(1, 13, 12, $time['month'], $time['year']));
+        do {} while (self::doRangeLimitDays($time['year'], $time['month'], $time['day']));
+        do {} while (self::doRangeLimit(1, 13, 12, $time['month'], $time['year']));
 
         return $time;
     }
 
-    private function doRangeLimit($start, $end, $adj, &$a, &$b)
+    private static function doRangeLimit($start, $end, $adj, &$a, &$b)
     {
         if ($a < $start) {
             $b -= (integer) (abs($a) / $adj + 1);
@@ -1149,7 +1153,7 @@ class DateTime
         return false;
     }
 
-    private function doRangeLimitDays(&$y, &$m, &$d)
+    private static function doRangeLimitDays(&$y, &$m, &$d)
     {
         $leapyear = 0;
         $daysThisMonth = 0;
@@ -1168,9 +1172,9 @@ class DateTime
             $d -= $daysPerLYearPeriod * ($d / $daysPerLYearPeriod);
         }
 
-        $this->doRangeLimit(1, 13, 12, $m, $y);
+        self::doRangeLimit(1, 13, 12, $m, $y);
 
-        $leapyear = $this->isLeap($y);
+        $leapyear = self::isLeap($y);
         $daysThisMonth = $leapyear ? $daysInMonthLeap[$m] : $daysInMonth[$m];
         $lastMonth = $m - 1;
 
@@ -1180,7 +1184,7 @@ class DateTime
         } else {
             $lastYear = $y;
         }
-        $leapyear = $this->isLeap($lastYear);
+        $leapyear = self::isLeap($lastYear);
         $daysLastMonth = $leapyear ? $daysInMonthLeap[$lastMonth] : $daysInMonth[$lastMonth];
 
         if ($d <= 0) {
@@ -1200,7 +1204,7 @@ class DateTime
         return false;
     }
 
-    private function isLeap($y)
+    private static function isLeap($y)
     {
         return ($y % 4 === 0) && (($y % 100 !== 0) || ($y % 400 === 0));
     }

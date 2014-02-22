@@ -453,6 +453,7 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             array(null, 'M', null, new DateTimeZone('GMT')),
             array(null, 'F', null, new DateTimeZone('GMT')),
             array(null, 'Y', null, new DateTimeZone('GMT')),
+            array(33*24*3600, 'z|', 33, new DateTimeZone('GMT')),
             array('1293839999', 'U', '1293839999', new DateTimeZone('GMT')),
             array(12345, 'U', 12345, new DateTimeZone('GMT')),
             array(null, 'U', null, new DateTimeZone('GMT')),
