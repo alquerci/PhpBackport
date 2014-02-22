@@ -106,6 +106,13 @@ class DateTime
 
     private $isLocal = false;
 
+    private static $lastErrors = array(
+        'warning_count' => 0,
+        'warnings'      => array(),
+        'error_count'   => 0,
+        'errors'        => array(),
+    );
+
     private static $timezoneRegex = '(?x:
         (?P<tzcorrection> # timezone correction
             (?:GMT)(?P<tzsignal>[+-])(?P<tzhours>0?[1-9]|1[0-2]):?(?P<tzminutes>[0-5][0-9])?
@@ -417,9 +424,13 @@ class DateTime
         $format = $args[1];
         $time = $args[2];
 
+        self::resetErrors();
+
         try {
             $time = self::parseFromFormat($format, $time);
         } catch (Exception $e) {
+            self::addError($e->getMessage());
+
             return false;
         }
 
@@ -468,8 +479,31 @@ class DateTime
 
             return $date;
         } catch (Exception $e) {
+            self::addError($e->getMessage());
+
             return false;
         }
+    }
+
+    public static function getLastErrors()
+    {
+        return self::$lastErrors;
+    }
+
+    private static function resetErrors()
+    {
+        self::$lastErrors = array(
+            'warning_count' => 0,
+            'warnings'      => array(),
+            'error_count'   => 0,
+            'errors'        => array(),
+        );
+    }
+
+    private static function addError($message)
+    {
+        ++self::$lastErrors['error_count'];
+        self::$lastErrors['errors'][] = $message;
     }
 
     /**
