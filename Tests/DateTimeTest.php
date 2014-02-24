@@ -181,6 +181,7 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             array('c', '1970-01-01T00:00:00+00:00', '@0 UTC'),
             array('c', '1970-01-01T00:00:00+08:02', '01-Jan-70 00:00:00 +08:02'),
             array('r', 'Thu, 01 Jan 1970 00:00:00 +0802', '01-Jan-70 00:00:00 +08:02'),
+            array('e', 'Australia/Darwin', '2005-10-10'),
         );
     }
 

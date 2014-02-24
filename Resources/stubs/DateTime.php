@@ -115,7 +115,7 @@ class DateTime
 
     private static $timezoneRegex = '(?x:
         (?P<tzcorrection> # timezone correction
-            (?:GMT)?(?P<tzsignal>[+-])(?P<tzhours>0?[1-9]|1[0-2]):?(?P<tzminutes>[0-5][0-9])?
+            (?:GMT)?(?P<tzsignal>[+-])(?P<tzhours>0?[1-9]|1[0-2]):?(?P<tzminutes>[0-5][0-9])
         )
         |(?P<tz> # timezone name
             \(?[A-Za-z]{1,6}\)?
