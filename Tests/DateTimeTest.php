@@ -1567,6 +1567,19 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             array('Australia/Eucla', '2010-02-03T16:50:06+08:45'),
         );
     }
+
+    public function testSetTimezoneAfterConstructWithTimezoneOffset()
+    {
+        date_default_timezone_set('Australia/Darwin');
+
+        $time = '2010-02-03T17:05:06+08:00';
+        $expected = '2010-02-03T04:05:06-05:00';
+
+        $dateTime = new DateTime($time);
+        $dateTime->setTimezone(new DateTimeZone('America/New_York'));
+
+        $this->assertEquals($expected, $dateTime->format('c'));
+    }
 }
 
 class Instinct_Component_PhpBackport_Tests_DateTimeTestClassWithToString

@@ -319,11 +319,14 @@ class DateTime
     {
         if (false === $this->isLocal) {
             $this->timestamp -= $this->format('Z');
+        } elseif (isset($this->time['zone_type']) && 'OFFSET' === $this->time['zone_type']) {
+            $this->timestamp -= $this->time['tz_offset'];
         }
 
         $this->timezone = $timezone;
 
         $this->isLocal = true;
+        $this->time['zone_type'] = 'ID';
     }
 
     public function getTimezone()
@@ -447,6 +450,7 @@ class DateTime
                 'e' => $signal.$hours.':'.$minutes,
                 'c' => 'Y-m-d\\TH:i:s'.$signal.$hours.':'.$minutes,
                 'r' => 'D, d M Y H:i:s '.$signal.$hours.$minutes,
+                'Z' => $offset,
             ));
         }
 
