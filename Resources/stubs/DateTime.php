@@ -118,7 +118,7 @@ class DateTime
             (?:GMT)?(?P<tzsignal>[+-])(?P<tzhours>0?[1-9]|1[0-2]):?(?P<tzminutes>[0-5][0-9])
         )
         |(?P<tz> # timezone name
-            \(?[A-Za-z]{1,6}\)?
+            \(?(?P<tzabbr>[A-Za-z]{1,6})\)?
             |[A-Z][a-z]+([_\/][A-Z][a-z]+)+
         )
     )';
@@ -150,6 +150,37 @@ class DateTime
                     $timezoneOnTime = new DateTimeZone($matches['tz']);
                     $this->isLocal = true;
                 } catch (Exception $e) {
+                    if (isset($matches['tzabbr'])) {
+                        $abbrs = DateTimeZone::listAbbreviations();
+                        $lowerCatches = strtolower($matches['tzabbr']);
+
+                        if (isset($abbrs[$lowerCatches])) {
+                            $zone = $abbrs[$lowerCatches][0];
+
+                            $timezoneName = 'GMT';
+                            if (0 !== $zone['offset']) {
+                                $timezoneName = $zone['timezone_id'];
+                            }
+
+                            $timezoneOnTime = new DateTimeZone($timezoneName);
+                            $this->isLocal = true;
+
+                            $this->time['have_relative'] = true;
+                            $this->time['zone_type'] = 'OFFSET';
+                            $this->time['tz_offset'] = $zone['offset'];
+                            $this->time['relative'] = array(
+                                'have_weekday_relative' => false,
+                                'hour'                  => null,
+                                'minute'                => null,
+                                'second'                => null,
+                                'month'                 => null,
+                                'day'                   => null,
+                                'year'                  => null,
+                                'is_dst'                => -1,
+                                'weekday'               => null,
+                            );
+                        }
+                    }
                 }
             } elseif (isset($matches['tzcorrection'])) {
                 $hours   = (int) $matches['tzhours'];
@@ -406,7 +437,7 @@ class DateTime
             $hours   = str_pad($relative['hour'], 2, '0', STR_PAD_LEFT);
             $minutes = str_pad($relative['minute'], 2, '0', STR_PAD_LEFT);
             $offset = $this->time['tz_offset'];
-            $signal  = 0 < $offset ? '+' : '-';
+            $signal  = 0 <= $offset ? '+' : '-';
 
             $format = $this->formatReplace($format, array(
                 'U' => $timestamp - $offset,

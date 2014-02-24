@@ -183,6 +183,7 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             array('r', 'Thu, 01 Jan 1970 00:00:00 +0802', '01-Jan-70 00:00:00 +08:02'),
             array('e', 'Australia/Darwin', '2005-10-10'),
             array('c', '2020-07-31T08:49:37+00:00', 'Friday July 31st 2020, 08:49:37 GMT', new DateTimeZone('GMT')),
+            array('c', '2010-02-03T04:05:06+00:00', '2010-02-03T04:05:06Z'),
         );
     }
 
