@@ -286,7 +286,13 @@ class DateTime
 
     public function setTimeZone(DateTimeZone $timezone)
     {
+        if (false === $this->isLocal) {
+            $this->timestamp -= $this->format('Z');
+        }
+
         $this->timezone = $timezone;
+
+        $this->isLocal = true;
     }
 
     public function getTimezone()

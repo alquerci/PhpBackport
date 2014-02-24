@@ -1539,6 +1539,33 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
             array('Y-m-d H:i:s', 'Australia/Melbourne', '1970-01-01 00:00:00'),
         );
     }
+
+    /**
+     * @dataProvider getSetTimezoneAfterCreateFromFormatData
+     *
+     * @param string $newTz
+     */
+    public function testSetTimezoneAfterCreateFromFormat($newTz, $expected)
+    {
+        date_default_timezone_set('Australia/Darwin');
+
+        $format = 'Y-m-d H:i:s';
+        $input = '2010-02-03 16:05:06';
+        $inputTz = new DateTimeZone('Asia/Hong_Kong');
+
+        $dateTime = DateTime::createFromFormat($format, $input, $inputTz);
+        $dateTime->setTimeZone(new DateTimeZone($newTz));
+
+        $this->assertEquals($expected, $dateTime->format('c'));
+    }
+
+    public function getSetTimezoneAfterCreateFromFormatData()
+    {
+        return array(
+            array('America/New_York', '2010-02-03T03:05:06-05:00'),
+            array('Australia/Eucla', '2010-02-03T16:50:06+08:45'),
+        );
+    }
 }
 
 class Instinct_Component_PhpBackport_Tests_DateTimeTestClassWithToString
