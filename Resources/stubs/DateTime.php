@@ -140,7 +140,9 @@ class DateTime
         }
 
         // Finds a timezone on the $time parameter
-        if (0 === strpos($date, '@')) {
+        if ('now' === strtolower($date)) {
+            $timezone = null;
+        } elseif (0 === strpos($date, '@')) {
             $timezoneOnTime = new DateTimeZone('GMT');
         } elseif (preg_match('/'.self::$timezoneRegex.'$/', $date, $matches)) {
             if (isset($matches['tz'])) {
@@ -178,7 +180,7 @@ class DateTime
         }
 
         // Fixed the timestamp if $time does not specifies a timezone
-        if (null === $timezoneOnTime && null !== $timezone && 'now' !== $date) {
+        if (null === $timezoneOnTime && null !== $timezone) {
             $timestamp += date('Z');
         }
 

@@ -187,6 +187,34 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
     }
 
     /**
+     * @dataProvider getConstructWhenTheTimeParameterIsEmptyData
+     *
+     * @param mixed        $time
+     * @param DateTimeZone $timezone
+     */
+    public function testConstructWhenTheTimeParameterIsEmpty($time = null, DateTimeZone $timezone = null)
+    {
+        date_default_timezone_set("Australia/Darwin");
+
+        $date = new DateTime($time, $timezone);
+
+        $this->assertEquals(time(), $date->getTimestamp(), '', 5);
+    }
+
+    public function getConstructWhenTheTimeParameterIsEmptyData()
+    {
+        return array(
+            array(null, null),
+            array('now', null),
+            array('NoW', null),
+            array(null, new DateTimeZone('UTC')),
+            array('NoW', new DateTimeZone('UTC')),
+            array(null, new DateTimeZone('Australia/Darwin')),
+            array(null, new DateTimeZone('Etc/GMT-5')),
+        );
+    }
+
+    /**
      * @dataProvider getFormatBasic1Data
      *
      * @param string $expected
@@ -813,16 +841,6 @@ class Instinct_Component_PhpBackport_Tests_DateTimeTest extends PHPUnit_Framewor
         $timestamp = $date->getTimestamp();
 
         $this->assertEquals(1293805799, $timestamp);
-    }
-
-    public function testConstructWithTimezoneUTC()
-    {
-        date_default_timezone_set("Australia/Darwin");
-
-        $date = new DateTime(null, new DateTimeZone('UTC'));
-        $timestamp = $date->getTimestamp();
-
-        $this->assertEquals(time(), $timestamp, '', 5);
     }
 
     public function testCreateFromFormatDateZero()
